@@ -1,13 +1,100 @@
 clear;close all;
 
-%??A B????????  A????10 B???100
-data1 = xlsread('data1.xlsx');
-data2 = xlsread('data2.xlsx');
+[data1, datac1] = data_prep('data1.csv',306);
+[data2, datac2] = data_prep('data2.csv',167);
+ 
+% % save data
+% writematrix(data1, 'data1.csv');
+% writematrix(datac1, 'datac1.csv');
+% writematrix(data2, 'data2.csv');
+% writematrix(datac2, 'datac2.csv');
 
-%option: data1 or data2
-data = data2;flag = 167;
-%data = data1;flag = 306;
+data = datac2;
+n = length(data);
+graph = zeros(n,n);
 
+for i = 1:n
+    for j = 1:n       
+        % i Vertical：1  or Horizontal：0 
+        
+        % if ix < jx then calculate(j in front of i) 
+        if data(i,2) < data(j,2)
+            
+        
+        if data(i,5) == 10 %start A===============================================
+            
+            % start is A, end is B-----------------------------------------
+            if data(j,5) == 100
+                graph(i,j) = 1; % save to graph
+                
+            % start is A, end is not B-------------------------------------
+            else
+                d = sqrt((data(j,2))^2+(data(j,3))^2+(data(j,4))^2);
+                
+                if data(j,5) == 1 % vertical                   
+                    gamma = 1.5e4;
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+
+                else % horizontal
+                    gamma = 2e4;
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+
+                end
+            end
+            
+        else %start not A=========================================================
+            
+            d = sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4))^2);          
+            % start is not A, end is B--------------------------------------
+            if data(j,5) == 100
+                gamma =3e4;
+                if  data(j,5) == 1 % vertical
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+               
+                else % horizontal
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+         
+                end
+            
+            % start is not A, end is not B----------------------------------
+            else
+                if  data(j,5) == 1 % vertical
+                    gamma = 1.5e4;
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+               
+                else % horizontal             
+                    gamma = 2e4;
+                    if d > gamma
+                        graph(i,j) = 1; % save to graph
+                    end
+         
+                end
+                
+                               
+            end % if end B
+        end % if start A 
+        
+        end % end ix < jx
+               
+    end % end for
+end % end for 
+
+numnode = sum(graph,2)
+
+%********************prepare data*****************************
+function [data, datac] = data_prep(filename,flag)
+    
+data = csvread(filename);   
 N = data(:,1); %?????
 X = data(:,2);
 Y = data(:,3);
@@ -31,7 +118,6 @@ text(B(2),B(3),B(4),'  B');
 xlabel('x');
 ylabel('y');
 zlabel('z');
-%% ????
 %-------------????---------------
 %A???
 xt = X(1);
@@ -56,15 +142,15 @@ cosTHETA = xb/sqrt(xb^2+yb^2);
 sinTHETA = yb/sqrt(xb^2+yb^2);
 
 %?z???THETA
-Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %????Rz
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]; %????Rz
 %position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';
 
 %?y???PHI
-Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %????Ry
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI]; %????Ry
 %position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;
 
 pos = Ry*Rz*position'; %??????????
-pos(:,end) %?????B???
+pos(:,end); %?????B???
 
 datac = [N pos' T L];
 Ac = datac(1,:);
@@ -84,8 +170,4 @@ xlabel('x');
 ylabel('y');
 zlabel('z');
 
-% save data
-% writematrix(data, 'data1.csv');
-% writematrix(datac, 'datac1.csv');
-writematrix(data, 'data2.csv');
-writematrix(datac, 'datac2.csv');
+end
