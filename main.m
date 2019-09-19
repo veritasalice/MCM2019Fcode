@@ -9,78 +9,107 @@ clear;close all;
 % writematrix(data2, 'data2.csv');
 % writematrix(datac2, 'datac2.csv');
 
-data = datac2;
+
+graph1 = build_graph(datac1,25,15,20,25,30,0.001);
+graph2 = build_graph(datac2,20,10,15,20,20,0.001);
+
+writematrix(graph1,'graph1.csv');
+writematrix(graph2,'graph2.csv');
+
+
+
+function graph = build_graph(data,alpha1,alpha2,beta1,beta2,theta,delta)
+%*********************build graph*****************************************
+
 n = length(data);
 graph = zeros(n,n);
 
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+gammaB = theta/delta;
+
 for i = 1:n
     for j = 1:n       
-        % i Vertical：1  or Horizontal：0 
+        % Vertical：1  or Horizontal：0 
         
-        % if ix < jx then calculate(j in front of i) 
-        if data(i,2) < data(j,2)
-            
-        
+        % prerequiste: if ix < jx then calculate(j in front of i) 
+        if data(i,2) < data(j,2) && data(i,2) >= 0 && data(j,2) >= 0
+                  
         if data(i,5) == 10 %start A===============================================
+            d = sqrt((data(j,2))^2+(data(j,3))^2+(data(j,4))^2);
             
             % start is A, end is B-----------------------------------------
             if data(j,5) == 100
-                graph(i,j) = 1; % save to graph
+                if d < gammaB
+                    graph(i,j) = 1; % save to graph
+                end
                 
             % start is A, end is not B-------------------------------------
             else
-                d = sqrt((data(j,2))^2+(data(j,3))^2+(data(j,4))^2);
-                
-                if data(j,5) == 1 % vertical                   
-                    gamma = 1.5e4;
-                    if d > gamma
-                        graph(i,j) = 1; % save to graph
-                    end
-
-                else % horizontal
-                    gamma = 2e4;
-                    if d > gamma
-                        graph(i,j) = 1; % save to graph
-                    end
-
+                switch data(j,5) % j v or h
+                    case 1  % vertical
+                        if d < gammav
+                            graph(i,j) = 1; % save to graph
+                        end
+               
+                    case 0  % horizontal
+                        if d < gammah
+                            graph(i,j) = 1; % save to graph
+                        end
+                    otherwise
                 end
             end
             
         else %start not A=========================================================
             
-            d = sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4))^2);          
+            if data(i,5) == 1 % i vertical
+                dv = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4))^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4))^2)); 
+            else              % i horizontal
+                dh = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)+beta)^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)-beta)^2));       
+            end
+                     
             % start is not A, end is B--------------------------------------
             if data(j,5) == 100
-                gamma =3e4;
-                if  data(j,5) == 1 % vertical
-                    if d > gamma
-                        graph(i,j) = 1; % save to graph
-                    end
+                %gamma =3e4;
+                switch data(i,5) % i v or h
+                    case 1  % vertical
+                        if dv < gammaB
+                            graph(i,j) = 1; % save to graph
+                        end
                
-                else % horizontal
-                    if d > gamma
-                        graph(i,j) = 1; % save to graph
-                    end
-         
+                    case 0  % horizontal
+                        if dh < gammaB
+                            graph(i,j) = 1; % save to graph
+                        end
+                    otherwise
                 end
             
             % start is not A, end is not B----------------------------------
             else
-                if  data(j,5) == 1 % vertical
-                    gamma = 1.5e4;
-                    if d > gamma
+
+                if  data(i,5)==1 && data(j,5) == 1 % i, j vertical
+                    %gamma = 1.5e4;
+                    if dv < gammav  %%%%%%%%%%%%%%%%%%%%%%%%%%
+                        graph(i,j) = 1; % save to graph
+                    end           
+                elseif data(i,5)==1 && data(j,5) == 0 % i vertical j horizontal             
+                    %gamma = 2e4;
+                    if dv < gammah
                         graph(i,j) = 1; % save to graph
                     end
-               
-                else % horizontal             
-                    gamma = 2e4;
-                    if d > gamma
+                elseif data(i,5)==0 && data(j,5) == 1 % i horizontal j vertical
+                    if dh < gammav
+                        graph(i,j) = 1; % save to graph
+                    end                  
+                else % i,j horizontal
+                    if dh < gammah
                         graph(i,j) = 1; % save to graph
                     end
          
-                end
+                end 
                 
-                               
             end % if end B
         end % if start A 
         
@@ -89,11 +118,14 @@ for i = 1:n
     end % end for
 end % end for 
 
-numnode = sum(graph,2)
+%sum(graph,2); % connection num
 
-%********************prepare data*****************************
+end
+
+
 function [data, datac] = data_prep(filename,flag)
-    
+%********************prepare data*****************************  
+
 data = csvread(filename);   
 N = data(:,1); %?????
 X = data(:,2);
