@@ -1,11 +1,12 @@
 clear;close all;
 
 %??A B????????  A????10 B???100
-%data1 = xlsread('data1.xlsx');
+data1 = xlsread('data1.xlsx');
 data2 = xlsread('data2.xlsx');
 
 %option: data1 or data2
 data = data2;flag = 167;
+%data = data1;flag = 306;
 
 N = data(:,1); %?????
 X = data(:,2);
@@ -83,6 +84,8 @@ xlabel('x');
 ylabel('y');
 zlabel('z');
 
-
-
-
+% save data
+% writematrix(data, 'data1.csv');
+% writematrix(datac, 'datac1.csv');
+writematrix(data, 'data2.csv');
+writematrix(datac, 'datac2.csv');
