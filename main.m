@@ -21,28 +21,30 @@ N1 = length(data1); N2 = length(data2);
 % [path2, distance2] = cal_THEshortestpath(graph2, W2, 'positive')
 
 %k1 = 
-k2 = 10; % param to change 500 - 1000
+k2 = 1000; % param to change 500 - 1000
+param = 1e4;
 
 %[bestPath1, shortestPaths1, leastNodes1] = get_bestPath(graph1, W1, N1, k1)
-[bestPath2, shortestPaths2, leastNodes2] = get_bestPath(graph2, W2, N2, k2);
+[bestPath2, theBestPath2, leastN2] = get_bestPath(graph2, W2, N2, k2, param);
 
 
-function [bestPath, shortestPaths, leastNodes] = get_bestPath(linkMatrix, weightMatrix,N,k)
-
-[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);
+function [bestPaths, theBestPath,leastN] = get_bestPath(linkMatrix, weightMatrix, N,k,param)
+%weightMatrix, 1, N, k = graph2, W2, N2, k2;
+[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);%(linkMatrix, 1, N, 1);
 [shortestPaths, totalCosts] = kShortestPath(weightMatrix, 1, N, k);
 
-bestPath = [];
-bestRate = [];
-m = 1; %%
-objFun = totalCosts{i} + m * pathN;
+bestPaths = [];
 for i = 1:k
+    
     pathN = length(shortestPaths{i});
-    bestRate{i} = {i, objFun};
-    bestPath{i} = {i, shortestPaths{i}};
-
+    objFun =  totalCosts(i) + param *pathN;
+        
+    bestPaths{i,1} = i;
+    bestPaths{i,2} = objFun;
+    bestPaths{i,3} = shortestPaths{i};
 end
-
+sortrows(bestPaths,2);
+theBestPath = bestPaths(1,:);
 end
 
 
