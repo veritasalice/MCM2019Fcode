@@ -1,7 +1,7 @@
 clear;close all;
 %============================Params to change===============================
-k1 = 100; % top k shortest path in dataset 1
-k2 = 100; % top k shortest path in dataset 2
+k1 = 20; % top k shortest path in dataset 1
+k2 = 20; % top k shortest path in dataset 2
 param = 1e4; % weight param:  ObjFun = total_distance + param * node_num 
 %==========================================================================
 
@@ -26,9 +26,11 @@ N1 = length(data1); N2 = length(data2);
 % [path2, distance2] = cal_THEshortestpath(graph2, W2, 'positive')
 
 
-[bestPath1, theBestPath1, leastN1] = get_bestPath(graph1, W1, N1,k1, param);
+[bestPath1, theBestPath1, leastN1] = get_bestPath(graph1, W1, N1, k1, param);
 [bestPath2, theBestPath2, leastN2] = get_bestPath(graph2, W2, N2, k2, param);
 
+writecell(bestPath1,'BestPaths1.csv');
+writecell(bestPath2,'BestPaths2.csv');
 
 function [bestPaths, theBestPath,leastN] = get_bestPath(linkMatrix, weightMatrix, N,k,param)
 %weightMatrix, 1, N, k = graph2, W2, N2, k2;
@@ -45,7 +47,7 @@ for i = 1:k
     bestPaths{i,2} = objFun;
     bestPaths{i,3} = shortestPaths{i};
 end
-sortrows(bestPaths,2);
+bestPaths = sortrows(bestPaths,2);
 theBestPath = bestPaths(1,:);
 end
 
@@ -280,7 +282,7 @@ gammaB = theta/delta;
 
 for i = 1:n
     for j = 1:n       
-        % Vertical：1  or Horizontal：0 
+        % Verticalï¼š1  or Horizontalï¼š0 
         
         % prerequiste: if ix < jx then calculate(j in front of i) 
         if data(i,2) < data(j,2) && data(i,2) >= 0 && data(j,2) >= 0
