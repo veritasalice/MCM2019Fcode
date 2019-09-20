@@ -1,4 +1,9 @@
 clear;close all;
+%============================Params to change===============================
+k1 = 100; % top k shortest path in dataset 1
+k2 = 100; % top k shortest path in dataset 2
+param = 1e4; % weight param:  ObjFun = total_distance + param * node_num 
+%==========================================================================
 
 [data1, datac1] = data_prep('data1.csv',306);
 [data2, datac2] = data_prep('data2.csv',167);
@@ -20,11 +25,8 @@ N1 = length(data1); N2 = length(data2);
 % [path1, distance1] = cal_THEshortestpath(graph1, W1, 'positive')
 % [path2, distance2] = cal_THEshortestpath(graph2, W2, 'positive')
 
-%k1 = 
-k2 = 1000; % param to change 500 - 1000
-param = 1e4;
 
-%[bestPath1, shortestPaths1, leastNodes1] = get_bestPath(graph1, W1, N1, k1)
+[bestPath1, theBestPath1, leastN1] = get_bestPath(graph1, W1, N1,k1, param);
 [bestPath2, theBestPath2, leastN2] = get_bestPath(graph2, W2, N2, k2, param);
 
 
