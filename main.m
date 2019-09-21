@@ -1,8 +1,11 @@
 clear;close all;
 %============================Params to change===============================
-k1 = 20; % top k shortest path in dataset 1 big
-k2 = 20; % top k shortest path in dataset 2
-param = 1e4; % weight param:  Ob jFun = total_distance + param * node_num 
+k1 = 1000; % top k shortest path in dataset 1 big
+k2 = 1000; % top k shortest path in dataset 2
+param = 1e4; % weight param:  ObjFun = total_distance + param * node_num 
+param1 = 1e4; param2 = 1e5; 
+% weight param:  ObjFun = total_distance + param1 * node_num + param2 * path_proba
+
 %==========================================================================
 
 [data1, datac1] = data_prep('data1.csv',306);
@@ -43,6 +46,33 @@ k4 = 1000;
 % writecell(nbestPath1,'nBestPaths1.csv');
 % writecell(nbestPath2,'nBestPaths2.csv');
 
+%--------------------------------------------
+[alpha1,alpha2,beta1,beta2,theta,delta] = [20,10,15,20,20,0.001];
+N = N2;
+nnG = graph2;
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+for i = 1:N
+    for j = 1:N
+        if datac2(i,6)==1 && graph2(i,j)==1
+            d = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4)+5)^2),...
+                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4)-5)^2),...
+                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4)+5)^2),...
+                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4)-5)^2) ); 
+            
+            if datac2(j,5) == 1 %vertical
+                if d > gammav
+                    nnG(i,j) = 0.8;
+                end
+            else                %horizontal
+                if d>gammah
+                    nnG(i,j) = 0.8;
+                end            
+            end
+            
+        end
+    end
+end
 function [nG, nW] = build_strict_graph(datac, G, W, N)
 
 cut = 0;
