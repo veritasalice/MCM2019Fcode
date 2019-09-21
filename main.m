@@ -31,29 +31,37 @@ N1 = length(data1); N2 = length(data2);
 % writecell(bestPath1,'BestPaths1.csv');
 % writecell(bestPath2,'BestPaths2.csv');
 
+%--------------------------------------------
+[nG1, nW1] = build_strict_graph(datac1, graph1, W1, N1);
+[nG2, nW2] = build_strict_graph(datac2, graph2, W2, N2);
 
-%input datac2 graph2
+[nbestPath1, ntheBestPath1, nleastN1] = get_bestPath(nG1, nW1, N1, k1, param);
+[nbestPath2, ntheBestPath2, nleastN2] = get_bestPath(nG2, nW2, N2, k2, param);
 
-datac = datac2;
-G = graph2;
-count = 0;
-N = N2;
+% writecell(nbestPath1,'nBestPaths1.csv');
+% writecell(nbestPath2,'nBestPaths2.csv');
+
+function [nG, nW] = build_strict_graph(datac, G, W, N)
+
+cut = 0;
 for i = 1:N
     for j = 1:N
       if G(i,j) == 1
-          %calculate d 
-          dsq = (datac(j,2)-datac(i,2))^2 ...
-              + ( abs(sqrt( datac(j,3)^2 + datac(j,4)^2)) - 200)^2;
-          if dsq < 40000
+          %calculate  d 
+          dx = datac(j,2)-datac(i,2);
+          dl = datac(j,3)^2 + datac(j,4)^2;
+          dsq = dx^2 + ( abs(sqrt(dl) ) - 200)^2;
+          if (dsq < 40000) || ( (dx < 200) && (dl > 40000))
               G(i,j) = Inf;
-              count = count +1
-          end
-                  
+              cut = cut + 1;
+          end                  
       end
-                  
-    end
-       
+    end      
 end
+nG = G;
+nW = W.*nG;
+end
+
 
 function [bestPaths, theBestPath,leastN] = get_bestPath(linkMatrix, weightMatrix, N,k,param)
 %weightMatrix, 1, N, k = graph2, W2, N2, k2;
