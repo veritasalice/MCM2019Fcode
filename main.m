@@ -1,6 +1,6 @@
 clear;close all;
 %============================Params to change===============================
-k1 = 20; % top k shortest path in dataset 1
+k1 = 20; % top k shortest path in dataset 1 big
 k2 = 20; % top k shortest path in dataset 2
 param = 1e4; % weight param:  Ob jFun = total_distance + param * node_num 
 %==========================================================================
@@ -35,8 +35,10 @@ N1 = length(data1); N2 = length(data2);
 [nG1, nW1] = build_strict_graph(datac1, graph1, W1, N1);
 [nG2, nW2] = build_strict_graph(datac2, graph2, W2, N2);
 
-[nbestPath1, ntheBestPath1, nleastN1] = get_bestPath(nG1, nW1, N1, k1, param);
-[nbestPath2, ntheBestPath2, nleastN2] = get_bestPath(nG2, nW2, N2, k2, param);
+k3 = 1000;
+k4 = 1000;
+[nbestPath1, ntheBestPath1, nleastN1] = get_bestPath(nG1, nW1, N1, k3, param);
+[nbestPath2, ntheBestPath2, nleastN2] = get_bestPath(nG2, nW2, N2, k4, param);
 
 % writecell(nbestPath1,'nBestPaths1.csv');
 % writecell(nbestPath2,'nBestPaths2.csv');
@@ -60,6 +62,7 @@ for i = 1:N
 end
 nG = G;
 nW = W.*nG;
+cut
 end
 
 
