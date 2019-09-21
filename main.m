@@ -2,7 +2,7 @@ clear;close all;
 %============================Params to change===============================
 k1 = 20; % top k shortest path in dataset 1
 k2 = 20; % top k shortest path in dataset 2
-param = 1e4; % weight param:  ObjFun = total_distance + param * node_num 
+param = 1e4; % weight param:  Ob jFun = total_distance + param * node_num 
 %==========================================================================
 
 [data1, datac1] = data_prep('data1.csv',306);
@@ -13,7 +13,6 @@ N1 = length(data1); N2 = length(data2);
 % writematrix(datac1, 'datac1.csv');
 % writematrix(data2, 'data2.csv');
 % writematrix(datac2, 'datac2.csv');
-
 
 [graph1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
 [graph2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
@@ -29,8 +28,32 @@ N1 = length(data1); N2 = length(data2);
 [bestPath1, theBestPath1, leastN1] = get_bestPath(graph1, W1, N1, k1, param);
 [bestPath2, theBestPath2, leastN2] = get_bestPath(graph2, W2, N2, k2, param);
 
-writecell(bestPath1,'BestPaths1.csv');
-writecell(bestPath2,'BestPaths2.csv');
+% writecell(bestPath1,'BestPaths1.csv');
+% writecell(bestPath2,'BestPaths2.csv');
+
+
+%input datac2 graph2
+
+datac = datac2;
+G = graph2;
+count = 0;
+N = N2;
+for i = 1:N
+    for j = 1:N
+      if G(i,j) == 1
+          %calculate d 
+          dsq = (datac(j,2)-datac(i,2))^2 ...
+              + ( abs(sqrt( datac(j,3)^2 + datac(j,4)^2)) - 200)^2;
+          if dsq < 40000
+              G(i,j) = Inf;
+              count = count +1
+          end
+                  
+      end
+                  
+    end
+       
+end
 
 function [bestPaths, theBestPath,leastN] = get_bestPath(linkMatrix, weightMatrix, N,k,param)
 %weightMatrix, 1, N, k = graph2, W2, N2, k2;
