@@ -66,8 +66,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1 --------------------------------------------</a></li><li><a href="#3">Q2 --------------------------------------------</a></li><li><a href="#4">Q3 --------------------------------------------</a></li><li><a href="#5">functions</a></li></ul></div><pre class="codeinput">clear;close <span class="string">all</span>;
-
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1 --------------------------------------------</a></li><li><a href="#3">Q2 --------------------------------------------</a></li><li><a href="#4">Q3 --------------------------------------------</a></li><li><a href="#5">functions</a></li></ul></div><pre class="codeinput">clear;close <span class="string">all</span>;clc;
+<span class="comment">% This project has been uploaded to github: https://github.com/veritasalice/MCM2019Fcode.git</span>
+<span class="comment">% The algorithm of finding the shortest path was based in part on the source</span>
+<span class="comment">% code of Canhui WANG's blog: https://blog.csdn.net/Canhui_WANG/article/details/51507914</span>
 <span class="comment">%============================Params===============================</span>
 k = 10; <span class="comment">% top k paths</span>
 alpha11=25;alpha21=15;beta11=20;beta21=25;theta1=30;delta1=0.001; <span class="comment">%data1</span>
@@ -83,11 +85,11 @@ alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; <span class="c
 [data2, datac2] = data_prep(<span class="string">'data2.csv'</span>,167);
 N1 = length(data1); N2 = length(data2);
 P1 = zeros(N1); P2 = zeros(N2);<span class="comment">% init</span>
-<span class="comment">% save data</span>
-writematrix(data1, <span class="string">'data1.csv'</span>);
-writematrix(datac1, <span class="string">'datac1.csv'</span>);
-writematrix(data2, <span class="string">'data2.csv'</span>);
-writematrix(datac2, <span class="string">'datac2.csv'</span>);
+<span class="comment">% % save data</span>
+<span class="comment">% writematrix(data1, 'data1.csv');</span>
+<span class="comment">% writematrix(datac1, 'datac1.csv');</span>
+<span class="comment">% writematrix(data2, 'data2.csv');</span>
+<span class="comment">% writematrix(datac2, 'datac2.csv');</span>
 </pre><pre class="codeoutput">
 Rz =
 
@@ -116,11 +118,7 @@ Ry =
                          0     1.000000000000000e+00                         0
     -4.848469300123636e-03                         0     9.999882461036458e-01
 
-</pre><pre class="codeoutput error">Undefined function 'writematrix' for input arguments of type 'double'.
-
-Error in main1 (line 19)
-writematrix(data1, 'data1.csv');
-</pre><h2 id="2">Q1 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 0;
+</pre><img vspace="5" hspace="5" src="main1_01.png" alt=""> <img vspace="5" hspace="5" src="main1_02.png" alt=""> <img vspace="5" hspace="5" src="main1_03.png" alt=""> <img vspace="5" hspace="5" src="main1_04.png" alt=""> <h2 id="2">Q1 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 0;
 
 [G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
 [G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
@@ -128,24 +126,34 @@ writematrix(data1, 'data1.csv');
 [bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-<span class="comment">% save graph</span>
-writematrix(G1,<span class="string">'G1.csv'</span>);
-writematrix(G2,<span class="string">'G2.csv'</span>);
-<span class="comment">% save path</span>
-writecell(bestDistancePaths1,<span class="string">'BestDistancePaths1.csv'</span>);
-writecell(bestDistancePaths2,<span class="string">'BestDistancePaths2.csv'</span>);
+<span class="comment">% % save graph</span>
+<span class="comment">% writematrix(G1,'G1.csv');</span>
+<span class="comment">% writematrix(G2,'G2.csv');</span>
+<span class="comment">% % save path</span>
+<span class="comment">% writecell(bestDistancePaths1,'BestDistancePaths1.csv');</span>
+<span class="comment">% writecell(bestDistancePaths2,'BestDistancePaths2.csv');</span>
 </pre><h2 id="3">Q2 --------------------------------------------</h2><p>a = 1; b = 1e4; c = 0;</p><pre class="codeinput">[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
 [nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
 
 [bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
 [bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
 
-<span class="comment">% save graph</span>
-writematrix(nG1,<span class="string">'nG1.csv'</span>);
-writematrix(nG2,<span class="string">'nG2.csv'</span>);
-<span class="comment">% save path</span>
-writecell(bestDNPaths1,<span class="string">'BestDNPaths1.csv'</span>);
-writecell(bestDNPaths2,<span class="string">'BestDNPaths2.csv'</span>);
+<span class="comment">% % save graph</span>
+<span class="comment">% writematrix(nG1,'nG1.csv');</span>
+<span class="comment">% writematrix(nG2,'nG2.csv');</span>
+<span class="comment">% % save path</span>
+<span class="comment">% writecell(bestDNPaths1,'BestDNPaths1.csv');</span>
+<span class="comment">% writecell(bestDNPaths2,'BestDNPaths2.csv');</span>
+</pre><pre class="codeoutput">
+cut =
+
+   245
+
+
+cut =
+
+    46
+
 </pre><h2 id="4">Q3 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 44800;
 
 P1 = build_graphProb(datac1, G1, N1, alpha11,alpha21,beta11,beta21,delta1);
@@ -154,12 +162,12 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 [bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-<span class="comment">% save graph</span>
-writematrix(P1,<span class="string">'P1.csv'</span>);
-writematrix(P2,<span class="string">'P2.csv'</span>);
-<span class="comment">% save path</span>
-writecell(bestPaths1,<span class="string">'BestPaths1.csv'</span>);
-writecell(bestPaths2,<span class="string">'BestPaths2.csv'</span>);
+<span class="comment">% % save graph</span>
+<span class="comment">% writematrix(P1,'P1.csv');</span>
+<span class="comment">% writematrix(P2,'P2.csv');</span>
+<span class="comment">% % save path</span>
+<span class="comment">% writecell(bestPaths1,'BestPaths1.csv');</span>
+<span class="comment">% writecell(bestPaths2,'BestPaths2.csv');</span>
 </pre><h2 id="5">functions</h2><pre class="codeinput"><span class="keyword">function</span> nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
 
 nnG = graph;
@@ -667,8 +675,10 @@ zlabel(<span class="string">'z'</span>);
 <span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-clear;close all;
-
+clear;close all;clc;
+% This project has been uploaded to github: https://github.com/veritasalice/MCM2019Fcode.git
+% The algorithm of finding the shortest path was based in part on the source
+% code of Canhui WANG's blog: https://blog.csdn.net/Canhui_WANG/article/details/51507914
 %============================Params===============================
 k = 10; % top k paths
 alpha11=25;alpha21=15;beta11=20;beta21=25;theta1=30;delta1=0.001; %data1
@@ -684,11 +694,11 @@ alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; %data2
 [data2, datac2] = data_prep('data2.csv',167);
 N1 = length(data1); N2 = length(data2);
 P1 = zeros(N1); P2 = zeros(N2);% init
-% save data
-writematrix(data1, 'data1.csv');
-writematrix(datac1, 'datac1.csv');
-writematrix(data2, 'data2.csv');
-writematrix(datac2, 'datac2.csv');
+% % save data
+% writematrix(data1, 'data1.csv');
+% writematrix(datac1, 'datac1.csv');
+% writematrix(data2, 'data2.csv');
+% writematrix(datac2, 'datac2.csv');
 
 %% Q1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
 a = 1; b = 1e4; c = 0;
@@ -699,12 +709,12 @@ a = 1; b = 1e4; c = 0;
 [bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(G1,'G1.csv');
-writematrix(G2,'G2.csv');
-% save path
-writecell(bestDistancePaths1,'BestDistancePaths1.csv');
-writecell(bestDistancePaths2,'BestDistancePaths2.csv');
+% % save graph
+% writematrix(G1,'G1.csv');
+% writematrix(G2,'G2.csv');
+% % save path
+% writecell(bestDistancePaths1,'BestDistancePaths1.csv');
+% writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 
 %% Q2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
 % a = 1; b = 1e4; c = 0;
@@ -715,12 +725,12 @@ writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 [bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
 [bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(nG1,'nG1.csv');
-writematrix(nG2,'nG2.csv');
-% save path
-writecell(bestDNPaths1,'BestDNPaths1.csv');
-writecell(bestDNPaths2,'BestDNPaths2.csv');
+% % save graph
+% writematrix(nG1,'nG1.csv');
+% writematrix(nG2,'nG2.csv');
+% % save path
+% writecell(bestDNPaths1,'BestDNPaths1.csv');
+% writecell(bestDNPaths2,'BestDNPaths2.csv');
 
 %% Q3 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
 a = 1; b = 1e4; c = 44800;
@@ -731,12 +741,12 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 [bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(P1,'P1.csv');
-writematrix(P2,'P2.csv');
-% save path
-writecell(bestPaths1,'BestPaths1.csv');
-writecell(bestPaths2,'BestPaths2.csv');
+% % save graph
+% writematrix(P1,'P1.csv');
+% writematrix(P2,'P2.csv');
+% % save path
+% writecell(bestPaths1,'BestPaths1.csv');
+% writecell(bestPaths2,'BestPaths2.csv');
 
 %% functions
 function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)

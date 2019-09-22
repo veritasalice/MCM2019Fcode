@@ -1,5 +1,6 @@
-clear;close all;
-% The code in the djkstra algorithm part was based in part on the source
+clear;close all;clc;
+% This project has been uploaded to github: https://github.com/veritasalice/MCM2019Fcode.git
+% The algorithm of finding the shortest path was based in part on the source
 % code of Canhui WANG's blog: https://blog.csdn.net/Canhui_WANG/article/details/51507914
 %============================Params===============================
 k = 10; % top k paths
@@ -16,11 +17,11 @@ alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; %data2
 [data2, datac2] = data_prep('data2.csv',167);
 N1 = length(data1); N2 = length(data2);
 P1 = zeros(N1); P2 = zeros(N2);% init
-% save data
-writematrix(data1, 'data1.csv');
-writematrix(datac1, 'datac1.csv');
-writematrix(data2, 'data2.csv');
-writematrix(datac2, 'datac2.csv');
+% % save data
+% writematrix(data1, 'data1.csv');
+% writematrix(datac1, 'datac1.csv');
+% writematrix(data2, 'data2.csv');
+% writematrix(datac2, 'datac2.csv');
 
 %% Q1 --------------------------------------------
 a = 1; b = 1e4; c = 0;
@@ -31,12 +32,12 @@ a = 1; b = 1e4; c = 0;
 [bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(G1,'G1.csv');
-writematrix(G2,'G2.csv');
-% save path
-writecell(bestDistancePaths1,'BestDistancePaths1.csv');
-writecell(bestDistancePaths2,'BestDistancePaths2.csv');
+% % save graph
+% writematrix(G1,'G1.csv');
+% writematrix(G2,'G2.csv');
+% % save path
+% writecell(bestDistancePaths1,'BestDistancePaths1.csv');
+% writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 
 %% Q2 --------------------------------------------
 % a = 1; b = 1e4; c = 0;
@@ -47,12 +48,12 @@ writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 [bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
 [bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(nG1,'nG1.csv');
-writematrix(nG2,'nG2.csv');
-% save path
-writecell(bestDNPaths1,'BestDNPaths1.csv');
-writecell(bestDNPaths2,'BestDNPaths2.csv');
+% % save graph
+% writematrix(nG1,'nG1.csv');
+% writematrix(nG2,'nG2.csv');
+% % save path
+% writecell(bestDNPaths1,'BestDNPaths1.csv');
+% writecell(bestDNPaths2,'BestDNPaths2.csv');
 
 %% Q3 --------------------------------------------
 a = 1; b = 1e4; c = 44800;
@@ -63,12 +64,12 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 [bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(P1,'P1.csv');
-writematrix(P2,'P2.csv');
-% save path
-writecell(bestPaths1,'BestPaths1.csv');
-writecell(bestPaths2,'BestPaths2.csv');
+% % save graph
+% writematrix(P1,'P1.csv');
+% writematrix(P2,'P2.csv');
+% % save path
+% writecell(bestPaths1,'BestPaths1.csv');
+% writecell(bestPaths2,'BestPaths2.csv');
 
 %% functions
 function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
@@ -530,8 +531,8 @@ z = Z - zt;
 
 position = [x y z];
 
-% -----------????-------------
-%???B???
+% ------------------------
+%B
 xb = x(end);
 yb = y(end);
 zb = z(end);
@@ -541,7 +542,7 @@ cosTHETA = xb/sqrt(xb^2+yb^2);
 sinTHETA = yb/sqrt(xb^2+yb^2);
 
 %?z???THETA
-Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %????Rz
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %Rz
 %position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';
 
 
@@ -551,11 +552,11 @@ cosPHI = a(1)/sqrt(a(1)^2+a(3)^2);
 sinPHI = a(3)/sqrt(a(1)^2+a(3)^2);
 
 %?y???PHI
-Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %????Ry
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %Ry
 %position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;
 
-pos = Ry*Rz*position'; %??????????
-pos(:,end); %?????B???
+pos = Ry*Rz*position'; %
+pos(:,end); %B
 
 datac = [N pos' T L];
 Ac = datac(1,:);
