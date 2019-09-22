@@ -1,119 +1,152 @@
 clear;close all;
-%============================Params to change===============================
-k1 = 1000; % top k shortest path in dataset 1 big
-k2 = 1000; % top k shortest path in dataset 2
-param = 1e4; % weight param:  ObjFun = total_distance + param * node_num 
-param1 = 1e4; param2 = 1e5; 
-% weight param:  ObjFun = total_distance + param1 * node_num + param2 * path_proba
-
+%============================Params===============================
+alpha1=20;alpha2=10;beta1=15;beta2=20;theta=20;delta=0.001;
+% weight param:  ObjFun = a*path_distance + b*node_num + c*path_proba
+k = 10;
 %==========================================================================
-
 [data1, datac1] = data_prep('data1.csv',306);
 [data2, datac2] = data_prep('data2.csv',167);
 N1 = length(data1); N2 = length(data2);
+P1 = zeros(N1); P2 = zeros(N2);% init
 % % save data
 % writematrix(data1, 'data1.csv');
 % writematrix(datac1, 'datac1.csv');
 % writematrix(data2, 'data2.csv');
 % writematrix(datac2, 'datac2.csv');
 
-[graph1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
-[graph2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
+%% Q1 --------------------------------------------
+a = 1; b = 1e4; c = 0;
+[G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
+[G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
+
+[bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
 % % save graph
-% writematrix(graph1,'graph1.csv');
-% writematrix(graph2,'graph2.csv');
+% writematrix(G1,'G1.csv');
+% writematrix(G2,'G2.csv');
+% % save path
+% writecell(bestDistancePaths1,'BestDistancePaths1.csv');
+% writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 
-% [path1, distance1] = cal_THEshortestpath(graph1, W1, 'positive')
-% [path2, distance2] = cal_THEshortestpath(graph2, W2, 'positive')
+%% Q2 --------------------------------------------
+a = 1; b = 1e4; c = 0;
+[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
+[nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
 
+[bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
+[bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
 
-[bestPath1, theBestPath1, leastN1] = get_bestPath(graph1, W1, N1, k1, param);
-[bestPath2, theBestPath2, leastN2] = get_bestPath(graph2, W2, N2, k2, param);
+% % save graph
+% writematrix(nG1,'nG1.csv');
+% writematrix(nG2,'nG2.csv');
+% % save path
+% writecell(bestDNPaths1,'BestDNPaths1.csv');
+% writecell(bestDNPaths2,'BestDNPaths2.csv');
 
-% writecell(bestPath1,'BestPaths1.csv');
-% writecell(bestPath2,'BestPaths2.csv');
+%% Q3 --------------------------------------------
+a = 1; b = 1e4; c = 44800;
 
-%--------------------------------------------
-[nG1, nW1] = build_strict_graph(datac1, graph1, W1, N1);
-[nG2, nW2] = build_strict_graph(datac2, graph2, W2, N2);
+P1 = build_graphProb(datac1, G1, N1, alpha1,alpha2,beta1,beta2,delta);
+P2 = build_graphProb(datac2, G2, N2, alpha1,alpha2,beta1,beta2,delta);
 
-k3 = 1000;
-k4 = 1000;
-[nbestPath1, ntheBestPath1, nleastN1] = get_bestPath(nG1, nW1, N1, k3, param);
-[nbestPath2, ntheBestPath2, nleastN2] = get_bestPath(nG2, nW2, N2, k4, param);
+[bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% writecell(nbestPath1,'nBestPaths1.csv');
-% writecell(nbestPath2,'nBestPaths2.csv');
+% % save graph
+% writematrix(P1,'P1.csv');
+% writematrix(P2,'P2.csv');
+% % save path
+% writecell(bestPaths1,'BestPaths1.csv');
+% writecell(bestPaths2,'BestPaths2.csv');
 
-%--------------------------------------------
-[alpha1,alpha2,beta1,beta2,theta,delta] = [20,10,15,20,20,0.001];
-N = N2;
-nnG = graph2;
+%% functions
+function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
+
+nnG = graph;
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
 gammav = min(alpha1,alpha2)/delta;
 gammah = min(beta1,beta2)/delta;
+
 for i = 1:N
     for j = 1:N
-        if datac2(i,6)==1 && graph2(i,j)==1
-            d = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4)+5)^2),...
-                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4)-5)^2),...
-                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4)+5)^2),...
-                	sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4)-5)^2) ); 
-            
-            if datac2(j,5) == 1 %vertical
-                if d > gammav
-                    nnG(i,j) = 0.8;
+        
+        if graph(i,j) == 1
+            if datac(i,6) == 1
+                if datac(i,5) == 1 %+vertical
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)+5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)-5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)+5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)-5)^2) ]); 
+         
+                else               %=
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)+beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)-beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)+beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)-beta)^2) ]); 
+         
                 end
-            else                %horizontal
-                if d>gammah
-                    nnG(i,j) = 0.8;
-                end            
-            end
             
+                if datac(j,5) == 1 && d > gammav   %+vertical          
+                    nnG(i,j) = -log(0.8) + 22.32 ; % 0.8 - > log add res    
+                elseif d > gammah                   %=
+                    nnG(i,j) = -log(0.8) + 22.32 ;             
+                end
+            
+            elseif datac(i,6)==0
+                nnG(i,j) = 0;  %1->0
+            end
         end
+        
+        
+        
+        
     end
+end
 end
 
 function [nG, nW] = build_strict_graph(datac, G, W, N)
 
+nG = G;
 cut = 0;
 for i = 1:N
     for j = 1:N
-      if G(i,j) == 1
+      if nG(i,j) == 1
           %calculate  d 
           dx = datac(j,2)-datac(i,2);
           dl = datac(j,3)^2 + datac(j,4)^2;
           dsq = dx^2 + ( abs(sqrt(dl) ) - 200)^2;
           if (dsq < 40000) || ( (dx < 200) && (dl > 40000))
-              G(i,j) = Inf;
+              nG(i,j) = Inf;
               cut = cut + 1;
           end                  
       end
     end      
 end
-nG = G;
 nW = W.*nG;
 cut
+
 end
 
 
-function [bestPaths, theBestPath,leastN] = get_bestPath(linkMatrix, weightMatrix, N,k,param)
+function [bestPaths, totalCosts] = get_bestPath(weightMatrix, linkMatrix, probMatrix, N,k,a,b,c)
 %weightMatrix, 1, N, k = graph2, W2, N2, k2;
-[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);%(linkMatrix, 1, N, 1);
-[shortestPaths, totalCosts] = kShortestPath(weightMatrix, 1, N, k);
+%[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);%(linkMatrix, 1, N, 1);
+
+objMatrix = a*weightMatrix + b*linkMatrix + c*probMatrix;
+
+[kPaths, totalCosts] = kShortestPath(objMatrix, 1, N, k);
 
 bestPaths = [];
 for i = 1:k
-    
-    pathN = length(shortestPaths{i});
-    objFun =  totalCosts(i) + param *pathN;
-        
+
     bestPaths{i,1} = i;
-    bestPaths{i,2} = objFun;
-    bestPaths{i,3} = shortestPaths{i};
+    bestPaths{i,2} = totalCosts(i);
+    bestPaths{i,3} = kPaths{i};
+    bestPaths{i,4} = length(kPaths{i});
 end
-bestPaths = sortrows(bestPaths,2);
-theBestPath = bestPaths(1,:);
+
 end
 
 
