@@ -2,7 +2,7 @@ close all;
 % [data1, datac1] = data_prep('data1.csv',306);
 % [data2, datac2] = data_prep('data2.csv',167);
 datafile = 'data1.csv';
-pathfile = 'BestDistancePaths2.csv';
+pathfile = 'BestDistancePaths1.csv';
 flag = 167;
 data = csvread(datafile); 
 path = csvread(pathfile);
@@ -29,12 +29,16 @@ hold on;
 plot3([A(2),B(2)],[A(3),B(3)],[A(4),B(4)],'b');
 hold on;
 %------------------------------------------------------------
-pathn = [1 579 137 171 12 287 613];
-for i = 1: 6 %i = 3: 3+pathn(1,end)-1
-   hold on;
-   j = pathn(i)
-   plot3([data(j,2),data(j+1,2)],...
-       [data(j,3),data(j+1,3)],[data(j,4),data(j+1,4)]);
+%pathn = [1 579 137 171 12 287 613];
+% plot3([data(1,2),data(579,2)],...
+%         [data(1,3),data(579,3)],[data(1,4),data(579,4)]);
+% plot3([data(579,2),data(137,2)],...
+%         [data(579,3),data(137,3)],[data(579,4),data(137,4)]);
+
+ for i = 3: path(1,end)+1
+    hold on;
+    plot3([data(path(1,i),2),data(path(1,i+1),2)],...
+       [data(path(1,i),3),data(path(1,i+1),3)],[data(path(1,i),4),data(pathn(1,i+1),4)]);
  
 end
 %-------------------------------------------------------------
