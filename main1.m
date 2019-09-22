@@ -1,4 +1,6 @@
 clear;close all;
+% The code in the djkstra algorithm part was based in part on the source
+% code of Canhui WANG's blog: https://blog.csdn.net/Canhui_WANG/article/details/51507914
 %============================Params===============================
 k = 10; % top k paths
 alpha11=25;alpha21=15;beta11=20;beta21=25;theta1=30;delta1=0.001; %data1
@@ -14,11 +16,11 @@ alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; %data2
 [data2, datac2] = data_prep('data2.csv',167);
 N1 = length(data1); N2 = length(data2);
 P1 = zeros(N1); P2 = zeros(N2);% init
-% % save data
-% writematrix(data1, 'data1.csv');
-% writematrix(datac1, 'datac1.csv');
-% writematrix(data2, 'data2.csv');
-% writematrix(datac2, 'datac2.csv');
+% save data
+writematrix(data1, 'data1.csv');
+writematrix(datac1, 'datac1.csv');
+writematrix(data2, 'data2.csv');
+writematrix(datac2, 'datac2.csv');
 
 %% Q1 --------------------------------------------
 a = 1; b = 1e4; c = 0;
@@ -26,31 +28,31 @@ a = 1; b = 1e4; c = 0;
 [G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
 [G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
 
-% [bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
-% [bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
-% 
-% % save graph
-% writematrix(G1,'G1.csv');
-% writematrix(G2,'G2.csv');
-% % save path
-% writecell(bestDistancePaths1,'BestDistancePaths1.csv');
-% writecell(bestDistancePaths2,'BestDistancePaths2.csv');
+[bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
+
+% save graph
+writematrix(G1,'G1.csv');
+writematrix(G2,'G2.csv');
+% save path
+writecell(bestDistancePaths1,'BestDistancePaths1.csv');
+writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 
 %% Q2 --------------------------------------------
 % a = 1; b = 1e4; c = 0;
 
-% [nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
-% [nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
-% 
-% [bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
-% [bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
-% 
-% % save graph
-% writematrix(nG1,'nG1.csv');
-% writematrix(nG2,'nG2.csv');
-% % save path
-% writecell(bestDNPaths1,'BestDNPaths1.csv');
-% writecell(bestDNPaths2,'BestDNPaths2.csv');
+[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
+[nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
+
+[bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
+[bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
+
+% save graph
+writematrix(nG1,'nG1.csv');
+writematrix(nG2,'nG2.csv');
+% save path
+writecell(bestDNPaths1,'BestDNPaths1.csv');
+writecell(bestDNPaths2,'BestDNPaths2.csv');
 
 %% Q3 --------------------------------------------
 a = 1; b = 1e4; c = 44800;
@@ -61,12 +63,12 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 [bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% % save graph
-% writematrix(P1,'P1.csv');
-% writematrix(P2,'P2.csv');
-% % save path
-% writecell(bestPaths1,'BestPaths1.csv');
-% writecell(bestPaths2,'BestPaths2.csv');
+% save graph
+writematrix(P1,'P1.csv');
+writematrix(P2,'P2.csv');
+% save path
+writecell(bestPaths1,'BestPaths1.csv');
+writecell(bestPaths2,'BestPaths2.csv');
 
 %% functions
 function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
@@ -288,7 +290,7 @@ end
 end
  
 function [shortestPath, totalCost] = dijkstra(netCostMatrix, s, d)
- 
+ % % 
 n = size(netCostMatrix,1);
 for i = 1:n
     % initialize the farthest node to be itself;
@@ -388,7 +390,7 @@ gammaB = theta/delta;
 
 for i = 1:n
     for j = 1:n       
-        % Verticalï¼š1  or Horizontalï¼š0 
+        % Vertical 1  or Horizontal 0 
         
         % prerequiste: if ix < jx then calculate(j in front of i) 
         if data(i,2) < data(j,2) && data(i,2) >= 0 && data(j,2) >= 0
@@ -452,7 +454,7 @@ for i = 1:n
 
                 if  data(i,5)==1 && data(j,5) == 1 % i, j vertical
                     %gamma = 1.5e4;
-                    if dv < gammav  %%%%%%%%%%%%%%%%%%%%%%%%%%
+                    if dv < gammav  
                         graph(i,j) = 1; % save to graph
                         W(i,j) = dv;
                     end           
@@ -516,8 +518,8 @@ text(B(2),B(3),B(4),'  B');
 xlabel('x');
 ylabel('y');
 zlabel('z');
-%-------------????---------------
-%A???
+%----------------------------
+%A
 xt = X(1);
 yt = Y(1);
 zt = Z(1);

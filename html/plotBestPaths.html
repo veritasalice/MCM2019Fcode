@@ -1,0 +1,212 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>plotBestPaths</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-09-23"><meta name="DC.source" content="plotBestPaths.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">close <span class="string">all</span>;clear;
+
+datafile1 = <span class="string">'data1.csv'</span>; datafile2 = <span class="string">'data2.csv'</span>;
+flag1 = 167; flag2 = 306;
+
+BestDistancePaths1 = <span class="string">'BestDistancePaths1.csv'</span>;
+BestDistancePaths2 = <span class="string">'BestDistancePaths2.csv'</span>;
+BestDNPaths1 = <span class="string">'BestDNPaths1.csv'</span>;
+BestDNPaths2 = <span class="string">'BestDNPaths2.csv'</span>;
+BestPaths1 = <span class="string">'BestPaths1.csv'</span>;
+BestPaths2 = <span class="string">'BestPaths2.csv'</span>;
+
+d11 = plot_result(datafile1, BestDistancePaths1, flag1,<span class="string">'Answer1 for data1'</span>,1);
+d12 = plot_result(datafile2, BestDistancePaths2, flag2,<span class="string">'Answer1 for data2'</span>,2);
+
+d21 = plot_result(datafile1, BestDNPaths1, flag1,<span class="string">'Answer2 for data1'</span>,3);
+d22 = plot_result(datafile2, BestDNPaths2, flag2,<span class="string">'Answer2 for data2'</span>,4);
+
+d31 = plot_result(datafile1, BestPaths1, flag1,<span class="string">'Answer3 for data1'</span>,5);
+d32 = plot_result(datafile2, BestPaths2, flag2,<span class="string">'Answer3 for data2'</span>,6);
+
+<span class="keyword">function</span> d = plot_result(datafile, pathfile, flag, mytitle,i)
+
+data = csvread(datafile);
+path = csvread(pathfile);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+fig = figure(i);
+scatter3(A(2),A(3),A(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%A</span>
+hold <span class="string">on</span>;
+scatter3(B(2),B(3),B(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%B</span>
+hold <span class="string">on</span>;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),<span class="string">'.'</span>,<span class="string">'m'</span>);
+hold <span class="string">on</span>;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),<span class="string">'.'</span>,<span class="string">'b'</span>);
+hold <span class="string">on</span>;
+plot3([A(2),B(2)],[A(3),B(3)],[A(4),B(4)],<span class="string">'k--'</span>);
+hold <span class="string">on</span>;
+d = [];
+ <span class="keyword">for</span> i = 3: path(1,end)+1
+    hold <span class="string">on</span>;
+    <span class="comment">% calculate distance error</span>
+    d(i-2) = 0.001*sqrt( (data(path(1,i+1),2) - data(path(1,i),2))^2 <span class="keyword">...</span>
+            +(data(path(1,i+1),3) - data(path(1,i),3))^2 <span class="keyword">...</span>
+            +(data(path(1,i+1),4) - data(path(1,i),4))^2 );
+    plot3([data(path(1,i),2),data(path(1,i+1),2)],<span class="keyword">...</span>
+       [data(path(1,i),3),data(path(1,i+1),3)],<span class="keyword">...</span>
+       [data(path(1,i),4),data(path(1,i+1),4)],<span class="string">'k'</span>);
+
+ <span class="keyword">end</span>
+
+
+<span class="comment">%-------------------------------------------------------------</span>
+text(A(2),A(3),A(4),<span class="string">'  A'</span>, <span class="string">'fontsize'</span>, 14);
+text(B(2),B(3),B(4),<span class="string">'  B'</span>, <span class="string">'fontsize'</span>, 14);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+zlabel(<span class="string">'z'</span>);
+title(mytitle);
+
+<span class="comment">% frame = getframe(fig);</span>
+<span class="comment">% im = frame2im(frame);</span>
+<span class="comment">% imwrite(im, strcat(mytitle,'.tiff'), 'tiff');</span>
+<span class="comment">% imwrite(im, strcat(mytitle,'.png'), 'png');</span>
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="plotBestPaths_01.png" alt=""> <img vspace="5" hspace="5" src="plotBestPaths_02.png" alt=""> <img vspace="5" hspace="5" src="plotBestPaths_03.png" alt=""> <img vspace="5" hspace="5" src="plotBestPaths_04.png" alt=""> <img vspace="5" hspace="5" src="plotBestPaths_05.png" alt=""> <img vspace="5" hspace="5" src="plotBestPaths_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all;clear;
+
+datafile1 = 'data1.csv'; datafile2 = 'data2.csv';
+flag1 = 167; flag2 = 306;
+
+BestDistancePaths1 = 'BestDistancePaths1.csv';
+BestDistancePaths2 = 'BestDistancePaths2.csv';
+BestDNPaths1 = 'BestDNPaths1.csv';
+BestDNPaths2 = 'BestDNPaths2.csv';
+BestPaths1 = 'BestPaths1.csv';
+BestPaths2 = 'BestPaths2.csv';
+
+d11 = plot_result(datafile1, BestDistancePaths1, flag1,'Answer1 for data1',1);
+d12 = plot_result(datafile2, BestDistancePaths2, flag2,'Answer1 for data2',2);
+
+d21 = plot_result(datafile1, BestDNPaths1, flag1,'Answer2 for data1',3);
+d22 = plot_result(datafile2, BestDNPaths2, flag2,'Answer2 for data2',4);
+
+d31 = plot_result(datafile1, BestPaths1, flag1,'Answer3 for data1',5);
+d32 = plot_result(datafile2, BestPaths2, flag2,'Answer3 for data2',6);
+
+function d = plot_result(datafile, pathfile, flag, mytitle,i)
+
+data = csvread(datafile); 
+path = csvread(pathfile);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+fig = figure(i);
+scatter3(A(2),A(3),A(4),'r','o','filled'); %A
+hold on;
+scatter3(B(2),B(3),B(4),'r','o','filled'); %B
+hold on;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),'.','m');
+hold on;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),'.','b');
+hold on;
+plot3([A(2),B(2)],[A(3),B(3)],[A(4),B(4)],'kREPLACE_WITH_DASH_DASH');
+hold on;
+d = [];
+ for i = 3: path(1,end)+1
+    hold on;
+    % calculate distance error
+    d(i-2) = 0.001*sqrt( (data(path(1,i+1),2) - data(path(1,i),2))^2 ...
+            +(data(path(1,i+1),3) - data(path(1,i),3))^2 ...
+            +(data(path(1,i+1),4) - data(path(1,i),4))^2 );
+    plot3([data(path(1,i),2),data(path(1,i+1),2)],...
+       [data(path(1,i),3),data(path(1,i+1),3)],...
+       [data(path(1,i),4),data(path(1,i+1),4)],'k'); 
+
+ end
+ 
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+text(A(2),A(3),A(4),'  A', 'fontsize', 14);
+text(B(2),B(3),B(4),'  B', 'fontsize', 14);
+xlabel('x');
+ylabel('y');
+zlabel('z');
+title(mytitle);
+
+% frame = getframe(fig);
+% im = frame2im(frame);
+% imwrite(im, strcat(mytitle,'.tiff'), 'tiff');
+% imwrite(im, strcat(mytitle,'.png'), 'png');
+
+end
+
+
+
+
+##### SOURCE END #####
+--></body></html>

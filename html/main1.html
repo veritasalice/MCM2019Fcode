@@ -1,0 +1,1248 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>main1</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-09-23"><meta name="DC.source" content="main1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1 --------------------------------------------</a></li><li><a href="#3">Q2 --------------------------------------------</a></li><li><a href="#4">Q3 --------------------------------------------</a></li><li><a href="#5">functions</a></li></ul></div><pre class="codeinput">clear;close <span class="string">all</span>;
+
+<span class="comment">%============================Params===============================</span>
+k = 10; <span class="comment">% top k paths</span>
+alpha11=25;alpha21=15;beta11=20;beta21=25;theta1=30;delta1=0.001; <span class="comment">%data1</span>
+alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; <span class="comment">%data2</span>
+
+<span class="comment">% weight param:  ObjFun = a*path_distance + b*node_num + c*path_proba</span>
+<span class="comment">% % ablation:</span>
+<span class="comment">% a = 1; b = 0; c = 0;   % only d</span>
+<span class="comment">% a = 0; b = 1; c = 0;    % only n</span>
+<span class="comment">% a = 0; b = 0; c = 44800;   % only p</span>
+<span class="comment">%======================================================================</span>
+[data1, datac1] = data_prep(<span class="string">'data1.csv'</span>,306);
+[data2, datac2] = data_prep(<span class="string">'data2.csv'</span>,167);
+N1 = length(data1); N2 = length(data2);
+P1 = zeros(N1); P2 = zeros(N2);<span class="comment">% init</span>
+<span class="comment">% save data</span>
+writematrix(data1, <span class="string">'data1.csv'</span>);
+writematrix(datac1, <span class="string">'datac1.csv'</span>);
+writematrix(data2, <span class="string">'data2.csv'</span>);
+writematrix(datac2, <span class="string">'datac2.csv'</span>);
+</pre><pre class="codeoutput">
+Rz =
+
+     9.953739135323237e-01     9.607690804426455e-02                         0
+    -9.607690804426455e-02     9.953739135323237e-01                         0
+                         0                         0     1.000000000000000e+00
+
+
+Ry =
+
+     9.999999760208473e-01                         0     2.189938466723011e-04
+                         0     1.000000000000000e+00                         0
+    -2.189938466723011e-04                         0     9.999999760208473e-01
+
+
+Rz =
+
+     9.704600916046946e-01     2.412617056281573e-01                         0
+    -2.412617056281573e-01     9.704600916046946e-01                         0
+                         0                         0     1.000000000000000e+00
+
+
+Ry =
+
+     9.999882461036458e-01                         0     4.848469300123636e-03
+                         0     1.000000000000000e+00                         0
+    -4.848469300123636e-03                         0     9.999882461036458e-01
+
+</pre><pre class="codeoutput error">Undefined function 'writematrix' for input arguments of type 'double'.
+
+Error in main1 (line 19)
+writematrix(data1, 'data1.csv');
+</pre><h2 id="2">Q1 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 0;
+
+[G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
+[G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
+
+[bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
+
+<span class="comment">% save graph</span>
+writematrix(G1,<span class="string">'G1.csv'</span>);
+writematrix(G2,<span class="string">'G2.csv'</span>);
+<span class="comment">% save path</span>
+writecell(bestDistancePaths1,<span class="string">'BestDistancePaths1.csv'</span>);
+writecell(bestDistancePaths2,<span class="string">'BestDistancePaths2.csv'</span>);
+</pre><h2 id="3">Q2 --------------------------------------------</h2><p>a = 1; b = 1e4; c = 0;</p><pre class="codeinput">[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
+[nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
+
+[bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
+[bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
+
+<span class="comment">% save graph</span>
+writematrix(nG1,<span class="string">'nG1.csv'</span>);
+writematrix(nG2,<span class="string">'nG2.csv'</span>);
+<span class="comment">% save path</span>
+writecell(bestDNPaths1,<span class="string">'BestDNPaths1.csv'</span>);
+writecell(bestDNPaths2,<span class="string">'BestDNPaths2.csv'</span>);
+</pre><h2 id="4">Q3 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 44800;
+
+P1 = build_graphProb(datac1, G1, N1, alpha11,alpha21,beta11,beta21,delta1);
+P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
+
+[bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
+
+<span class="comment">% save graph</span>
+writematrix(P1,<span class="string">'P1.csv'</span>);
+writematrix(P2,<span class="string">'P2.csv'</span>);
+<span class="comment">% save path</span>
+writecell(bestPaths1,<span class="string">'BestPaths1.csv'</span>);
+writecell(bestPaths2,<span class="string">'BestPaths2.csv'</span>);
+</pre><h2 id="5">functions</h2><pre class="codeinput"><span class="keyword">function</span> nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
+
+nnG = graph;
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+
+<span class="keyword">for</span> i = 1:N
+    <span class="keyword">for</span> j = 1:N
+
+        <span class="keyword">if</span> graph(i,j) == 1
+            <span class="keyword">if</span> datac(i,6) == 1
+                <span class="keyword">if</span> datac(i,5) == 1 <span class="comment">%+vertical</span>
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)+5)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)-5)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)+5)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)-5)^2) ]);
+
+                <span class="keyword">else</span>               <span class="comment">%=</span>
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)+beta)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)-beta)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)+beta)^2),<span class="keyword">...</span>
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)-beta)^2) ]);
+
+                <span class="keyword">end</span>
+
+                <span class="keyword">if</span> datac(j,5) == 1 &amp;&amp; d &gt; gammav   <span class="comment">%+vertical</span>
+                    nnG(i,j) = -log(0.8) + 22.32 ; <span class="comment">% 0.8 - &gt; log add res</span>
+                <span class="keyword">elseif</span> d &gt; gammah                   <span class="comment">%=</span>
+                    nnG(i,j) = -log(0.8) + 22.32 ;
+                <span class="keyword">end</span>
+
+            <span class="keyword">elseif</span> datac(i,6)==0
+                nnG(i,j) = 0;  <span class="comment">%1-&gt;0</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+
+
+
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [nG, nW] = build_strict_graph(datac, G, W, N)
+
+nG = G;
+cut = 0;
+<span class="keyword">for</span> i = 1:N
+    <span class="keyword">for</span> j = 1:N
+      <span class="keyword">if</span> nG(i,j) == 1
+          <span class="comment">%calculate  d</span>
+          dx = datac(j,2)-datac(i,2);
+          dl = datac(j,3)^2 + datac(j,4)^2;
+          dsq = dx^2 + ( abs(sqrt(dl) ) - 200)^2;
+          <span class="keyword">if</span> (dsq &lt; 40000) || ( (dx &lt; 200) &amp;&amp; (dl &gt; 40000))
+              nG(i,j) = Inf;
+              cut = cut + 1;
+          <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+nW = W.*nG;
+cut
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> [bestPaths, totalCosts] = get_bestPath(weightMatrix, linkMatrix, probMatrix, N,k,a,b,c)
+<span class="comment">%weightMatrix, 1, N, k = graph2, W2, N2, k2;</span>
+<span class="comment">%[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);%(linkMatrix, 1, N, 1);</span>
+
+objMatrix = a*weightMatrix + b*linkMatrix + c*probMatrix;
+
+[kPaths, totalCosts] = kShortestPath(objMatrix, 1, N, k);
+
+bestPaths = [];
+<span class="keyword">for</span> i = 1:k
+
+    bestPaths{i,1} = i;
+    bestPaths{i,2} = totalCosts(i);
+    bestPaths{i,3} = kPaths{i};
+    bestPaths{i,4} = length(kPaths{i});
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> [shortestPaths, totalCosts] = kShortestPath(netCostMatrix, source, destination, k_paths)
+
+<span class="keyword">if</span> source &gt; size(netCostMatrix,1) || destination &gt; size(netCostMatrix,1)
+    warning(<span class="string">'The source or destination node are not part of netCostMatrix'</span>);
+    shortestPaths=[];
+    totalCosts=[];
+<span class="keyword">else</span>
+    <span class="comment">%---------------------INITIALIZATION---------------------</span>
+    k=1;
+    [path, cost] = dijkstra(netCostMatrix, source, destination);
+    <span class="comment">%P is a cell array that holds all the paths found so far:</span>
+    <span class="keyword">if</span> isempty(path)
+        shortestPaths=[];
+        totalCosts=[];
+    <span class="keyword">else</span>
+        path_number = 1;
+        P{path_number,1} = path; P{path_number,2} = cost;
+        current_P = path_number;
+        <span class="comment">%X is a cell array of a subset of P (used by Yen's algorithm below):</span>
+        size_X=1;
+        X{size_X} = {path_number; path; cost};
+
+        <span class="comment">%S path_number x 1</span>
+        S(path_number) = path(1); <span class="comment">%deviation vertex is the first node initially</span>
+
+        <span class="comment">% K = 1 is the shortest path returned by dijkstra():</span>
+        shortestPaths{k} = path ;
+        totalCosts(k) = cost;
+
+        <span class="comment">%--------------------------------------------------------</span>
+        <span class="keyword">while</span> (k &lt; k_paths   &amp;&amp;   size_X ~= 0 )
+            <span class="comment">%remove P from X</span>
+            <span class="keyword">for</span> i=1:length(X)
+                <span class="keyword">if</span>  X{i}{1} == current_P
+                    size_X = size_X - 1;
+                    X(i) = [];<span class="comment">%delete cell</span>
+                    <span class="keyword">break</span>;
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            <span class="comment">%---------------------------------------</span>
+            P_ = P{current_P,1}; <span class="comment">%P_ is current P, just to make is easier for the notations</span>
+
+            <span class="comment">%Find w in (P_,w) in set S, w was the dev vertex used to found P_</span>
+            w = S(current_P);
+            <span class="keyword">for</span> i = 1: length(P_)
+                <span class="keyword">if</span> w == P_(i)
+                    w_index_in_path = i;
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+
+            <span class="keyword">for</span> index_dev_vertex= w_index_in_path: length(P_) - 1   <span class="comment">%index_dev_vertex is index in P_ of deviation vertex</span>
+                temp_netCostMatrix = netCostMatrix;
+                <span class="comment">%------</span>
+                <span class="comment">%Remove vertices in P before index_dev_vertex and there incident edges</span>
+                <span class="keyword">for</span> i = 1: index_dev_vertex-1
+                    v = P_(i);
+                    temp_netCostMatrix(v,:)=inf;
+                    temp_netCostMatrix(:,v)=inf;
+                <span class="keyword">end</span>
+                <span class="comment">%------</span>
+                <span class="comment">%remove incident edge of v if v is in shortestPaths (K) U P_  with similar sub_path to P_....</span>
+                SP_sameSubPath=[];
+                index =1;
+                SP_sameSubPath{index}=P_;
+                <span class="keyword">for</span> i = 1: length(shortestPaths)
+                    <span class="keyword">if</span> length(shortestPaths{i}) &gt;= index_dev_vertex
+                        <span class="keyword">if</span> P_(1:index_dev_vertex) == shortestPaths{i}(1:index_dev_vertex)
+                            index = index+1;
+                            SP_sameSubPath{index}=shortestPaths{i};
+                        <span class="keyword">end</span>
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+                v_ = P_(index_dev_vertex);
+                <span class="keyword">for</span> j = 1: length(SP_sameSubPath)
+                    next = SP_sameSubPath{j}(index_dev_vertex+1);
+                    temp_netCostMatrix(v_,next)=inf;
+                <span class="keyword">end</span>
+                <span class="comment">%------</span>
+
+                <span class="comment">%get the cost of the sub path before deviation vertex v</span>
+                sub_P = P_(1:index_dev_vertex);
+                cost_sub_P=0;
+                <span class="keyword">for</span> i = 1: length(sub_P)-1
+                    cost_sub_P = cost_sub_P + netCostMatrix(sub_P(i),sub_P(i+1));
+                <span class="keyword">end</span>
+
+                <span class="comment">%call dijkstra between deviation vertex to destination node</span>
+                [dev_p, c] = dijkstra(temp_netCostMatrix, P_(index_dev_vertex), destination);
+                <span class="keyword">if</span> ~isempty(dev_p)
+                    path_number = path_number + 1;
+                    P{path_number,1} = [sub_P(1:end-1) dev_p] ;  <span class="comment">%concatenate sub path- to -vertex -to- destination</span>
+                    P{path_number,2} =  cost_sub_P + c ;
+
+                    S(path_number) = P_(index_dev_vertex);
+
+                    size_X = size_X + 1;
+                    X{size_X} = {path_number;  P{path_number,1} ;P{path_number,2} };
+                <span class="keyword">else</span>
+                    <span class="comment">%warning('k=%d, isempty(p)==true!\n',k);</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            <span class="comment">%---------------------------------------</span>
+            <span class="comment">%Step necessary otherwise if k is bigger than number of possible paths</span>
+            <span class="comment">%the last results will get repeated !</span>
+            <span class="keyword">if</span> size_X &gt; 0
+                shortestXCost= X{1}{3};  <span class="comment">%cost of path</span>
+                shortestX= X{1}{1};        <span class="comment">%ref number of path</span>
+                <span class="keyword">for</span> i = 2 : size_X
+                    <span class="keyword">if</span>  X{i}{3} &lt; shortestXCost
+                        shortestX= X{i}{1};
+                        shortestXCost= X{i}{3};
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+                current_P = shortestX;
+                <span class="comment">%******</span>
+                k = k+1;
+                shortestPaths{k} = P{current_P,1};
+                totalCosts(k) = P{current_P,2};
+                <span class="comment">%******</span>
+            <span class="keyword">else</span>
+                <span class="comment">%k = k+1;</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [shortestPath, totalCost] = dijkstra(netCostMatrix, s, d)
+ <span class="comment">% %</span>
+n = size(netCostMatrix,1);
+<span class="keyword">for</span> i = 1:n
+    <span class="comment">% initialize the farthest node to be itself;</span>
+    farthestPrevHop(i) = i; <span class="comment">% used to compute the RTS/CTS range;</span>
+    farthestNextHop(i) = i;
+<span class="keyword">end</span>
+
+<span class="comment">% all the nodes are un-visited;</span>
+visited(1:n) = false;
+
+distance(1:n) = inf;    <span class="comment">% it stores the shortest distance between each node and the source node;</span>
+parent(1:n) = 0;
+
+distance(s) = 0;
+<span class="keyword">for</span> i = 1:(n-1)
+    temp = [];
+    <span class="keyword">for</span> h = 1:n
+         <span class="keyword">if</span> ~visited(h)  <span class="comment">% in the tree;</span>
+             temp=[temp distance(h)];
+         <span class="keyword">else</span>
+             temp=[temp inf];
+         <span class="keyword">end</span>
+     <span class="keyword">end</span>
+     [t, u] = min(temp);      <span class="comment">% it starts from node with the shortest distance to the source;</span>
+     visited(u) = true;         <span class="comment">% mark it as visited;</span>
+     <span class="keyword">for</span> v = 1:n                <span class="comment">% for each neighbors of node u;</span>
+         <span class="keyword">if</span> ( ( netCostMatrix(u, v) + distance(u)) &lt; distance(v) )
+             distance(v) = distance(u) + netCostMatrix(u, v);   <span class="comment">% update the shortest distance when a shorter shortestPath is found;</span>
+             parent(v) = u;     <span class="comment">% update its parent;</span>
+         <span class="keyword">end</span>
+     <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+shortestPath = [];
+<span class="keyword">if</span> parent(d) ~= 0   <span class="comment">% if there is a shortestPath!</span>
+    t = d;
+    shortestPath = [d];
+    <span class="keyword">while</span> t ~= s
+        p = parent(t);
+        shortestPath = [p shortestPath];
+
+        <span class="keyword">if</span> netCostMatrix(t, farthestPrevHop(t)) &lt; netCostMatrix(t, p)
+            farthestPrevHop(t) = p;
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> netCostMatrix(p, farthestNextHop(p)) &lt; netCostMatrix(p, t)
+            farthestNextHop(p) = t;
+        <span class="keyword">end</span>
+
+        t = p;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+totalCost = distance(d);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [path, distance] = cal_THEshortestpath(affinity, W, methods)
+<span class="comment">% *********************calculate shortest path**********************************</span>
+N = length(affinity);
+s = [];
+t = [];
+w = [];
+
+<span class="keyword">for</span> i=1:N
+    <span class="keyword">for</span> j=1:N
+        <span class="keyword">if</span> affinity(i,j)==1
+            s = [s,i];
+            t = [t,j];
+            w = [w,W(i,j)];
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+G = digraph(s,t,w);
+<span class="comment">% figure;</span>
+<span class="comment">% p = plot(G,'EdgeLabel',G.Edges.Weight);</span>
+
+<span class="comment">%Dijkstra:"positive" Bellman-Ford:"mixed"</span>
+[path, distance] = shortestpath(G,1,N,<span class="string">'Method'</span>, methods);
+<span class="comment">% highlight(p, path,'EdgeColor','red')</span>
+
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> [graph,W] = build_graph(data,alpha1,alpha2,beta1,beta2,theta,delta)
+<span class="comment">%*********************build graph*****************************************</span>
+
+n = length(data);
+graph = Inf(n);
+W = Inf(n);
+
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+gammaB = theta/delta;
+
+<span class="keyword">for</span> i = 1:n
+    <span class="keyword">for</span> j = 1:n
+        <span class="comment">% Vertical 1  or Horizontal 0</span>
+
+        <span class="comment">% prerequiste: if ix &lt; jx then calculate(j in front of i)</span>
+        <span class="keyword">if</span> data(i,2) &lt; data(j,2) &amp;&amp; data(i,2) &gt;= 0 &amp;&amp; data(j,2) &gt;= 0
+
+        <span class="keyword">if</span> data(i,5) == 10 <span class="comment">%start A===============================================</span>
+            d = sqrt((data(j,2))^2+(data(j,3))^2+(data(j,4))^2);
+
+            <span class="comment">% start is A, end is B-----------------------------------------</span>
+            <span class="keyword">if</span> data(j,5) == 100
+                <span class="keyword">if</span> d &lt; gammaB
+                    graph(i,j) = 1; <span class="comment">% save to graph</span>
+                    W(i,j) = d;
+                <span class="keyword">end</span>
+
+            <span class="comment">% start is A, end is not B-------------------------------------</span>
+            <span class="keyword">else</span>
+                <span class="keyword">switch</span> data(j,5) <span class="comment">% j v or h</span>
+                    <span class="keyword">case</span> 1  <span class="comment">% vertical</span>
+                        <span class="keyword">if</span> d &lt; gammav
+                            graph(i,j) = 1; <span class="comment">% save to graph</span>
+                            W(i,j) = d;
+                        <span class="keyword">end</span>
+
+                    <span class="keyword">case</span> 0  <span class="comment">% horizontal</span>
+                        <span class="keyword">if</span> d &lt; gammah
+                            graph(i,j) = 1; <span class="comment">% save to graph</span>
+                            W(i,j) = d;
+                        <span class="keyword">end</span>
+                    <span class="keyword">otherwise</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+        <span class="keyword">else</span> <span class="comment">%start not A=========================================================</span>
+
+            <span class="keyword">if</span> data(i,5) == 1 <span class="comment">% i vertical</span>
+                dv = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4))^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4))^2));
+            <span class="keyword">else</span>              <span class="comment">% i horizontal</span>
+                dh = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)+beta)^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)-beta)^2));
+            <span class="keyword">end</span>
+
+            <span class="comment">% start is not A, end is B--------------------------------------</span>
+            <span class="keyword">if</span> data(j,5) == 100
+                <span class="comment">%gamma =3e4;</span>
+                <span class="keyword">switch</span> data(i,5) <span class="comment">% i v or h</span>
+                    <span class="keyword">case</span> 1  <span class="comment">% vertical</span>
+                        <span class="keyword">if</span> dv &lt; gammaB
+                            graph(i,j) = 1; <span class="comment">% save to graph</span>
+                            W(i,j) = dv;
+                        <span class="keyword">end</span>
+
+                    <span class="keyword">case</span> 0  <span class="comment">% horizontal</span>
+                        <span class="keyword">if</span> dh &lt; gammaB
+                            graph(i,j) = 1; <span class="comment">% save to graph</span>
+                            W(i,j) = dh;
+                        <span class="keyword">end</span>
+                    <span class="keyword">otherwise</span>
+                <span class="keyword">end</span>
+
+            <span class="comment">% start is not A, end is not B----------------------------------</span>
+            <span class="keyword">else</span>
+
+                <span class="keyword">if</span>  data(i,5)==1 &amp;&amp; data(j,5) == 1 <span class="comment">% i, j vertical</span>
+                    <span class="comment">%gamma = 1.5e4;</span>
+                    <span class="keyword">if</span> dv &lt; gammav
+                        graph(i,j) = 1; <span class="comment">% save to graph</span>
+                        W(i,j) = dv;
+                    <span class="keyword">end</span>
+                <span class="keyword">elseif</span> data(i,5)==1 &amp;&amp; data(j,5) == 0 <span class="comment">% i vertical j horizontal</span>
+                    <span class="comment">%gamma = 2e4;</span>
+                    <span class="keyword">if</span> dv &lt; gammah
+                        graph(i,j) = 1; <span class="comment">% save to graph</span>
+                        W(i,j) = dv;
+                    <span class="keyword">end</span>
+                <span class="keyword">elseif</span> data(i,5)==0 &amp;&amp; data(j,5) == 1 <span class="comment">% i horizontal j vertical</span>
+                    <span class="keyword">if</span> dh &lt; gammav
+                        graph(i,j) = 1; <span class="comment">% save to graph</span>
+                        W(i,j) = dh;
+                    <span class="keyword">end</span>
+                <span class="keyword">else</span> <span class="comment">% i,j horizontal</span>
+                    <span class="keyword">if</span> dh &lt; gammah
+                        graph(i,j) = 1; <span class="comment">% save to graph</span>
+                        W(i,j) = dh;
+                    <span class="keyword">end</span>
+
+                <span class="keyword">end</span>
+
+            <span class="keyword">end</span> <span class="comment">% if end B</span>
+        <span class="keyword">end</span> <span class="comment">% if start A</span>
+
+        <span class="keyword">end</span> <span class="comment">% end ix &lt; jx</span>
+
+    <span class="keyword">end</span> <span class="comment">% end for</span>
+<span class="keyword">end</span> <span class="comment">% end for</span>
+
+<span class="comment">%sum(graph,2); % connection num</span>
+
+<span class="keyword">end</span>
+
+
+<span class="keyword">function</span> [data, datac] = data_prep(filename,flag)
+<span class="comment">%********************prepare data*****************************</span>
+
+data = csvread(filename);
+N = data(:,1); <span class="comment">%?????</span>
+X = data(:,2);
+Y = data(:,3);
+Z = data(:,4);
+T = data(:,5); <span class="comment">%?????</span>
+L = data(:,6);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+figure;
+scatter3(A(2),A(3),A(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%A</span>
+hold <span class="string">on</span>;
+scatter3(B(2),B(3),B(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%B</span>
+hold <span class="string">on</span>;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),<span class="string">'.'</span>,<span class="string">'m'</span>);
+hold <span class="string">on</span>;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),<span class="string">'.'</span>,<span class="string">'b'</span>);
+hold <span class="string">on</span>;
+text(A(2),A(3),A(4),<span class="string">'  A'</span>);
+text(B(2),B(3),B(4),<span class="string">'  B'</span>);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+zlabel(<span class="string">'z'</span>);
+<span class="comment">%----------------------------</span>
+<span class="comment">%A</span>
+xt = X(1);
+yt = Y(1);
+zt = Z(1);
+
+x = X - xt;
+y = Y - yt;
+z = Z - zt;
+
+position = [x y z];
+
+<span class="comment">% -----------????-------------</span>
+<span class="comment">%???B???</span>
+xb = x(end);
+yb = y(end);
+zb = z(end);
+
+
+cosTHETA = xb/sqrt(xb^2+yb^2);
+sinTHETA = yb/sqrt(xb^2+yb^2);
+
+<span class="comment">%?z???THETA</span>
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] <span class="comment">%????Rz</span>
+<span class="comment">%position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';</span>
+
+
+a = Rz*[xb;yb;zb]; <span class="comment">% first trans</span>
+
+cosPHI = a(1)/sqrt(a(1)^2+a(3)^2);
+sinPHI = a(3)/sqrt(a(1)^2+a(3)^2);
+
+<span class="comment">%?y???PHI</span>
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] <span class="comment">%????Ry</span>
+<span class="comment">%position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;</span>
+
+pos = Ry*Rz*position'; <span class="comment">%??????????</span>
+pos(:,end); <span class="comment">%?????B???</span>
+
+datac = [N pos' T L];
+Ac = datac(1,:);
+Bc = datac(end,:);
+datacP = sortrows(datac(2:end-1,:),5);
+figure;
+scatter3(Ac(2),Ac(3),Ac(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%A</span>
+hold <span class="string">on</span>;
+scatter3(Bc(2),Bc(3),Bc(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%B</span>
+hold <span class="string">on</span>;
+scatter3(datacP(1:flag,2),datacP(1:flag,3),datacP(1:flag,4),<span class="string">'.'</span>,<span class="string">'m'</span>);
+hold <span class="string">on</span>;
+scatter3(datacP(flag+1:end,2),datacP(flag+1:end,3),datacP(flag+1:end,4),<span class="string">'.'</span>,<span class="string">'b'</span>);
+text(Ac(2),Ac(3),Ac(4),<span class="string">'  A'</span>);
+text(Bc(2),Bc(3),Bc(4),<span class="string">'  B'</span>);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+zlabel(<span class="string">'z'</span>);
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear;close all;
+
+%============================Params===============================
+k = 10; % top k paths
+alpha11=25;alpha21=15;beta11=20;beta21=25;theta1=30;delta1=0.001; %data1
+alpha12=20;alpha22=10;beta12=15;beta22=20;theta2=20;delta2=0.001; %data2
+
+% weight param:  ObjFun = a*path_distance + b*node_num + c*path_proba
+% % ablation:
+% a = 1; b = 0; c = 0;   % only d
+% a = 0; b = 1; c = 0;    % only n
+% a = 0; b = 0; c = 44800;   % only p
+%======================================================================
+[data1, datac1] = data_prep('data1.csv',306);
+[data2, datac2] = data_prep('data2.csv',167);
+N1 = length(data1); N2 = length(data2);
+P1 = zeros(N1); P2 = zeros(N2);% init
+% save data
+writematrix(data1, 'data1.csv');
+writematrix(datac1, 'datac1.csv');
+writematrix(data2, 'data2.csv');
+writematrix(datac2, 'datac2.csv');
+
+%% Q1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+a = 1; b = 1e4; c = 0;
+
+[G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
+[G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
+
+[bestDistancePaths1, dCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestDistancePaths2, dCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
+
+% save graph
+writematrix(G1,'G1.csv');
+writematrix(G2,'G2.csv');
+% save path
+writecell(bestDistancePaths1,'BestDistancePaths1.csv');
+writecell(bestDistancePaths2,'BestDistancePaths2.csv');
+
+%% Q2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% a = 1; b = 1e4; c = 0;
+
+[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
+[nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
+
+[bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
+[bestDNPaths2, dnCosts2] = get_bestPath(nW2, nG2, P2 ,N2, k, a, b, c);
+
+% save graph
+writematrix(nG1,'nG1.csv');
+writematrix(nG2,'nG2.csv');
+% save path
+writecell(bestDNPaths1,'BestDNPaths1.csv');
+writecell(bestDNPaths2,'BestDNPaths2.csv');
+
+%% Q3 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+a = 1; b = 1e4; c = 44800;
+
+P1 = build_graphProb(datac1, G1, N1, alpha11,alpha21,beta11,beta21,delta1);
+P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
+
+[bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
+[bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
+
+% save graph
+writematrix(P1,'P1.csv');
+writematrix(P2,'P2.csv');
+% save path
+writecell(bestPaths1,'BestPaths1.csv');
+writecell(bestPaths2,'BestPaths2.csv');
+
+%% functions
+function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
+
+nnG = graph;
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+
+for i = 1:N
+    for j = 1:N
+        
+        if graph(i,j) == 1
+            if datac(i,6) == 1
+                if datac(i,5) == 1 %+vertical
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)+5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+alpha)^2+(datac(j,4)-datac(i,4)-5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)+5)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-alpha)^2+(datac(j,4)-datac(i,4)-5)^2) ]); 
+         
+                else               %=
+                    d = max([sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)+beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)+5)^2+(datac(j,4)-datac(i,4)-beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)+beta)^2),...
+                	sqrt((datac(j,2)-datac(i,2))^2+(datac(j,3)-datac(i,3)-5)^2+(datac(j,4)-datac(i,4)-beta)^2) ]); 
+         
+                end
+            
+                if datac(j,5) == 1 && d > gammav   %+vertical          
+                    nnG(i,j) = -log(0.8) + 22.32 ; % 0.8 - > log add res    
+                elseif d > gammah                   %=
+                    nnG(i,j) = -log(0.8) + 22.32 ;             
+                end
+            
+            elseif datac(i,6)==0
+                nnG(i,j) = 0;  %1->0
+            end
+        end
+        
+        
+        
+        
+    end
+end
+end
+
+function [nG, nW] = build_strict_graph(datac, G, W, N)
+
+nG = G;
+cut = 0;
+for i = 1:N
+    for j = 1:N
+      if nG(i,j) == 1
+          %calculate  d 
+          dx = datac(j,2)-datac(i,2);
+          dl = datac(j,3)^2 + datac(j,4)^2;
+          dsq = dx^2 + ( abs(sqrt(dl) ) - 200)^2;
+          if (dsq < 40000) || ( (dx < 200) && (dl > 40000))
+              nG(i,j) = Inf;
+              cut = cut + 1;
+          end                  
+      end
+    end      
+end
+nW = W.*nG;
+cut
+
+end
+
+
+function [bestPaths, totalCosts] = get_bestPath(weightMatrix, linkMatrix, probMatrix, N,k,a,b,c)
+%weightMatrix, 1, N, k = graph2, W2, N2, k2;
+%[leastNodes, leastN] = kShortestPath(linkMatrix, 1, N, 1);%(linkMatrix, 1, N, 1);
+
+objMatrix = a*weightMatrix + b*linkMatrix + c*probMatrix;
+
+[kPaths, totalCosts] = kShortestPath(objMatrix, 1, N, k);
+
+bestPaths = [];
+for i = 1:k
+
+    bestPaths{i,1} = i;
+    bestPaths{i,2} = totalCosts(i);
+    bestPaths{i,3} = kPaths{i};
+    bestPaths{i,4} = length(kPaths{i});
+end
+
+end
+
+
+function [shortestPaths, totalCosts] = kShortestPath(netCostMatrix, source, destination, k_paths)
+ 
+if source > size(netCostMatrix,1) || destination > size(netCostMatrix,1)
+    warning('The source or destination node are not part of netCostMatrix');
+    shortestPaths=[];
+    totalCosts=[];
+else
+    %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-INITIALIZATIONREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+    k=1;
+    [path, cost] = dijkstra(netCostMatrix, source, destination);
+    %P is a cell array that holds all the paths found so far:
+    if isempty(path)
+        shortestPaths=[];
+        totalCosts=[];
+    else
+        path_number = 1; 
+        P{path_number,1} = path; P{path_number,2} = cost; 
+        current_P = path_number;
+        %X is a cell array of a subset of P (used by Yen's algorithm below):
+        size_X=1;  
+        X{size_X} = {path_number; path; cost};
+ 
+        %S path_number x 1
+        S(path_number) = path(1); %deviation vertex is the first node initially
+ 
+        % K = 1 is the shortest path returned by dijkstra():
+        shortestPaths{k} = path ;
+        totalCosts(k) = cost;
+ 
+        %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        while (k < k_paths   &&   size_X ~= 0 )
+            %remove P from X
+            for i=1:length(X)
+                if  X{i}{1} == current_P
+                    size_X = size_X - 1;
+                    X(i) = [];%delete cell
+                    break;
+                end
+            end
+ 
+            %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+            P_ = P{current_P,1}; %P_ is current P, just to make is easier for the notations
+ 
+            %Find w in (P_,w) in set S, w was the dev vertex used to found P_
+            w = S(current_P);
+            for i = 1: length(P_)
+                if w == P_(i)
+                    w_index_in_path = i;
+                end
+            end
+ 
+ 
+            for index_dev_vertex= w_index_in_path: length(P_) - 1   %index_dev_vertex is index in P_ of deviation vertex
+                temp_netCostMatrix = netCostMatrix;
+                %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+                %Remove vertices in P before index_dev_vertex and there incident edges
+                for i = 1: index_dev_vertex-1
+                    v = P_(i);
+                    temp_netCostMatrix(v,:)=inf;
+                    temp_netCostMatrix(:,v)=inf;
+                end
+                %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+                %remove incident edge of v if v is in shortestPaths (K) U P_  with similar sub_path to P_....
+                SP_sameSubPath=[];
+                index =1;
+                SP_sameSubPath{index}=P_;
+                for i = 1: length(shortestPaths)
+                    if length(shortestPaths{i}) >= index_dev_vertex
+                        if P_(1:index_dev_vertex) == shortestPaths{i}(1:index_dev_vertex)
+                            index = index+1;
+                            SP_sameSubPath{index}=shortestPaths{i};
+                        end
+                    end            
+                end       
+                v_ = P_(index_dev_vertex);
+                for j = 1: length(SP_sameSubPath)
+                    next = SP_sameSubPath{j}(index_dev_vertex+1);
+                    temp_netCostMatrix(v_,next)=inf;   
+                end
+                %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+ 
+                %get the cost of the sub path before deviation vertex v
+                sub_P = P_(1:index_dev_vertex);
+                cost_sub_P=0;
+                for i = 1: length(sub_P)-1
+                    cost_sub_P = cost_sub_P + netCostMatrix(sub_P(i),sub_P(i+1));
+                end
+ 
+                %call dijkstra between deviation vertex to destination node    
+                [dev_p, c] = dijkstra(temp_netCostMatrix, P_(index_dev_vertex), destination);
+                if ~isempty(dev_p)
+                    path_number = path_number + 1;
+                    P{path_number,1} = [sub_P(1:end-1) dev_p] ;  %concatenate sub path- to -vertex -to- destination
+                    P{path_number,2} =  cost_sub_P + c ;
+ 
+                    S(path_number) = P_(index_dev_vertex);
+ 
+                    size_X = size_X + 1; 
+                    X{size_X} = {path_number;  P{path_number,1} ;P{path_number,2} };
+                else
+                    %warning('k=%d, isempty(p)==true!\n',k);
+                end      
+            end
+            %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+            %Step necessary otherwise if k is bigger than number of possible paths
+            %the last results will get repeated !
+            if size_X > 0
+                shortestXCost= X{1}{3};  %cost of path
+                shortestX= X{1}{1};        %ref number of path
+                for i = 2 : size_X
+                    if  X{i}{3} < shortestXCost
+                        shortestX= X{i}{1};
+                        shortestXCost= X{i}{3};
+                    end
+                end
+                current_P = shortestX;
+                %******
+                k = k+1;
+                shortestPaths{k} = P{current_P,1};
+                totalCosts(k) = P{current_P,2};
+                %******
+            else
+                %k = k+1;
+            end
+        end
+    end
+end
+end
+ 
+function [shortestPath, totalCost] = dijkstra(netCostMatrix, s, d)
+ % % 
+n = size(netCostMatrix,1);
+for i = 1:n
+    % initialize the farthest node to be itself;
+    farthestPrevHop(i) = i; % used to compute the RTS/CTS range;
+    farthestNextHop(i) = i;
+end
+ 
+% all the nodes are un-visited;
+visited(1:n) = false;
+ 
+distance(1:n) = inf;    % it stores the shortest distance between each node and the source node;
+parent(1:n) = 0;
+ 
+distance(s) = 0;
+for i = 1:(n-1)
+    temp = [];
+    for h = 1:n
+         if ~visited(h)  % in the tree;
+             temp=[temp distance(h)];
+         else
+             temp=[temp inf];
+         end
+     end
+     [t, u] = min(temp);      % it starts from node with the shortest distance to the source;
+     visited(u) = true;         % mark it as visited;
+     for v = 1:n                % for each neighbors of node u;
+         if ( ( netCostMatrix(u, v) + distance(u)) < distance(v) )
+             distance(v) = distance(u) + netCostMatrix(u, v);   % update the shortest distance when a shorter shortestPath is found;
+             parent(v) = u;     % update its parent;
+         end             
+     end
+end
+ 
+shortestPath = [];
+if parent(d) ~= 0   % if there is a shortestPath!
+    t = d;
+    shortestPath = [d];
+    while t ~= s
+        p = parent(t);
+        shortestPath = [p shortestPath];
+        
+        if netCostMatrix(t, farthestPrevHop(t)) < netCostMatrix(t, p)
+            farthestPrevHop(t) = p;
+        end
+        if netCostMatrix(p, farthestNextHop(p)) < netCostMatrix(p, t)
+            farthestNextHop(p) = t;
+        end
+ 
+        t = p;      
+    end
+end
+ 
+totalCost = distance(d);
+end
+
+function [path, distance] = cal_THEshortestpath(affinity, W, methods)
+% *********************calculate shortest path**********************************    
+N = length(affinity);
+s = [];
+t = [];
+w = [];
+
+for i=1:N
+    for j=1:N
+        if affinity(i,j)==1
+            s = [s,i];
+            t = [t,j];
+            w = [w,W(i,j)];
+        end
+    end
+end
+
+G = digraph(s,t,w);
+% figure;
+% p = plot(G,'EdgeLabel',G.Edges.Weight);
+
+%Dijkstra:"positive" Bellman-Ford:"mixed"
+[path, distance] = shortestpath(G,1,N,'Method', methods);
+% highlight(p, path,'EdgeColor','red')
+
+
+end
+
+
+function [graph,W] = build_graph(data,alpha1,alpha2,beta1,beta2,theta,delta)
+%*********************build graph*****************************************
+
+n = length(data);
+graph = Inf(n);
+W = Inf(n);
+
+alpha = min(alpha1,alpha2);
+beta = min(beta1,beta2);
+gammav = min(alpha1,alpha2)/delta;
+gammah = min(beta1,beta2)/delta;
+gammaB = theta/delta;
+
+for i = 1:n
+    for j = 1:n       
+        % Vertical 1  or Horizontal 0 
+        
+        % prerequiste: if ix < jx then calculate(j in front of i) 
+        if data(i,2) < data(j,2) && data(i,2) >= 0 && data(j,2) >= 0
+                  
+        if data(i,5) == 10 %start A===============================================
+            d = sqrt((data(j,2))^2+(data(j,3))^2+(data(j,4))^2);
+            
+            % start is A, end is BREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+            if data(j,5) == 100
+                if d < gammaB
+                    graph(i,j) = 1; % save to graph
+                    W(i,j) = d;
+                end
+                
+            % start is A, end is not BREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+            else
+                switch data(j,5) % j v or h
+                    case 1  % vertical
+                        if d < gammav
+                            graph(i,j) = 1; % save to graph
+                            W(i,j) = d;
+                        end
+               
+                    case 0  % horizontal
+                        if d < gammah
+                            graph(i,j) = 1; % save to graph
+                            W(i,j) = d;
+                        end
+                    otherwise
+                end
+            end
+            
+        else %start not A=========================================================
+            
+            if data(i,5) == 1 % i vertical
+                dv = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)+alpha)^2+(data(j,4)-data(i,4))^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3)-alpha)^2+(data(j,4)-data(i,4))^2)); 
+            else              % i horizontal
+                dh = max(sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)+beta)^2),sqrt((data(j,2)-data(i,2))^2+(data(j,3)-data(i,3))^2+(data(j,4)-data(i,4)-beta)^2));       
+            end
+                     
+            % start is not A, end is BREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+            if data(j,5) == 100
+                %gamma =3e4;
+                switch data(i,5) % i v or h
+                    case 1  % vertical
+                        if dv < gammaB
+                            graph(i,j) = 1; % save to graph
+                            W(i,j) = dv;
+                        end
+               
+                    case 0  % horizontal
+                        if dh < gammaB
+                            graph(i,j) = 1; % save to graph
+                            W(i,j) = dh;
+                        end
+                    otherwise
+                end
+            
+            % start is not A, end is not BREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+            else
+
+                if  data(i,5)==1 && data(j,5) == 1 % i, j vertical
+                    %gamma = 1.5e4;
+                    if dv < gammav  
+                        graph(i,j) = 1; % save to graph
+                        W(i,j) = dv;
+                    end           
+                elseif data(i,5)==1 && data(j,5) == 0 % i vertical j horizontal             
+                    %gamma = 2e4;
+                    if dv < gammah
+                        graph(i,j) = 1; % save to graph
+                        W(i,j) = dv;
+                    end
+                elseif data(i,5)==0 && data(j,5) == 1 % i horizontal j vertical
+                    if dh < gammav
+                        graph(i,j) = 1; % save to graph
+                        W(i,j) = dh;
+                    end                  
+                else % i,j horizontal
+                    if dh < gammah
+                        graph(i,j) = 1; % save to graph
+                        W(i,j) = dh;
+                    end
+         
+                end 
+                
+            end % if end B
+        end % if start A 
+        
+        end % end ix < jx
+               
+    end % end for
+end % end for 
+
+%sum(graph,2); % connection num
+
+end
+
+
+function [data, datac] = data_prep(filename,flag)
+%********************prepare data*****************************  
+
+data = csvread(filename);   
+N = data(:,1); %?????
+X = data(:,2);
+Y = data(:,3);
+Z = data(:,4);
+T = data(:,5); %?????
+L = data(:,6);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+figure;
+scatter3(A(2),A(3),A(4),'r','o','filled'); %A
+hold on;
+scatter3(B(2),B(3),B(4),'r','o','filled'); %B
+hold on;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),'.','m');
+hold on;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),'.','b');
+hold on;
+text(A(2),A(3),A(4),'  A');
+text(B(2),B(3),B(4),'  B');
+xlabel('x');
+ylabel('y');
+zlabel('z');
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%A
+xt = X(1);
+yt = Y(1);
+zt = Z(1);
+
+x = X - xt;
+y = Y - yt;
+z = Z - zt;
+
+position = [x y z];
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-????REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+%???B???
+xb = x(end);
+yb = y(end);
+zb = z(end);
+
+
+cosTHETA = xb/sqrt(xb^2+yb^2);
+sinTHETA = yb/sqrt(xb^2+yb^2);
+
+%?z???THETA
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %????Rz
+%position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';
+
+
+a = Rz*[xb;yb;zb]; % first trans
+
+cosPHI = a(1)/sqrt(a(1)^2+a(3)^2);
+sinPHI = a(3)/sqrt(a(1)^2+a(3)^2);
+
+%?y???PHI
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %????Ry
+%position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;
+
+pos = Ry*Rz*position'; %??????????
+pos(:,end); %?????B???
+
+datac = [N pos' T L];
+Ac = datac(1,:);
+Bc = datac(end,:);
+datacP = sortrows(datac(2:end-1,:),5);
+figure;
+scatter3(Ac(2),Ac(3),Ac(4),'r','o','filled'); %A
+hold on;
+scatter3(Bc(2),Bc(3),Bc(4),'r','o','filled'); %B
+hold on;
+scatter3(datacP(1:flag,2),datacP(1:flag,3),datacP(1:flag,4),'.','m');
+hold on;
+scatter3(datacP(flag+1:end,2),datacP(flag+1:end,3),datacP(flag+1:end,4),'.','b');
+text(Ac(2),Ac(3),Ac(4),'  A');
+text(Bc(2),Bc(3),Bc(4),'  B');
+xlabel('x');
+ylabel('y');
+zlabel('z');
+
+end
+##### SOURCE END #####
+--></body></html>
