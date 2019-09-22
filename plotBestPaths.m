@@ -58,7 +58,7 @@ ylabel('y');
 zlabel('z');
 title(mytitle);
 
-saveas(gcf,strcat(mytitle,'.eps'))
+%saveas(gcf,strcat(mytitle,'.eps'))
 end
 
 
