@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1 --------------------------------------------</a></li><li><a href="#3">Q2 --------------------------------------------</a></li><li><a href="#4">Q3 --------------------------------------------</a></li><li><a href="#5">functions</a></li></ul></div><pre class="codeinput">clear;close <span class="string">all</span>;clc;
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Q1</a></li><li><a href="#3">Q2</a></li><li><a href="#4">Q3</a></li><li><a href="#5">Plot paths</a></li><li><a href="#6">Functions</a></li></ul></div><pre class="codeinput">clear;close <span class="string">all</span>;clc;
 <span class="comment">% This project has been uploaded to github: https://github.com/veritasalice/MCM2019Fcode.git</span>
 <span class="comment">% The algorithm of finding the shortest path was based in part on the source</span>
 <span class="comment">% code of Canhui WANG's blog: https://blog.csdn.net/Canhui_WANG/article/details/51507914</span>
@@ -118,7 +118,7 @@ Ry =
                          0     1.000000000000000e+00                         0
     -4.848469300123636e-03                         0     9.999882461036458e-01
 
-</pre><img vspace="5" hspace="5" src="main1_01.png" alt=""> <img vspace="5" hspace="5" src="main1_02.png" alt=""> <img vspace="5" hspace="5" src="main1_03.png" alt=""> <img vspace="5" hspace="5" src="main1_04.png" alt=""> <h2 id="2">Q1 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 0;
+</pre><img vspace="5" hspace="5" src="main1_01.png" alt=""> <img vspace="5" hspace="5" src="main1_02.png" alt=""> <img vspace="5" hspace="5" src="main1_03.png" alt=""> <img vspace="5" hspace="5" src="main1_04.png" alt=""> <h2 id="2">Q1</h2><pre class="codeinput">a = 1; b = 1e4; c = 0;
 
 [G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
 [G2,W2] = build_graph(datac2,20,10,15,20,20,0.001);
@@ -132,7 +132,7 @@ Ry =
 <span class="comment">% % save path</span>
 <span class="comment">% writecell(bestDistancePaths1,'BestDistancePaths1.csv');</span>
 <span class="comment">% writecell(bestDistancePaths2,'BestDistancePaths2.csv');</span>
-</pre><h2 id="3">Q2 --------------------------------------------</h2><p>a = 1; b = 1e4; c = 0;</p><pre class="codeinput">[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
+</pre><h2 id="3">Q2</h2><p>a = 1; b = 1e4; c = 0;</p><pre class="codeinput">[nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
 [nG2, nW2] = build_strict_graph(datac2, G2, W2, N2);
 
 [bestDNPaths1, dnCosts1] = get_bestPath(nW1, nG1, P1 ,N1, k, a, b, c);
@@ -154,7 +154,7 @@ cut =
 
     46
 
-</pre><h2 id="4">Q3 --------------------------------------------</h2><pre class="codeinput">a = 1; b = 1e4; c = 44800;
+</pre><h2 id="4">Q3</h2><pre class="codeinput">a = 1; b = 1e4; c = 44800;
 
 P1 = build_graphProb(datac1, G1, N1, alpha11,alpha21,beta11,beta21,delta1);
 P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
@@ -168,7 +168,67 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 <span class="comment">% % save path</span>
 <span class="comment">% writecell(bestPaths1,'BestPaths1.csv');</span>
 <span class="comment">% writecell(bestPaths2,'BestPaths2.csv');</span>
-</pre><h2 id="5">functions</h2><pre class="codeinput"><span class="keyword">function</span> nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
+</pre><h2 id="5">Plot paths</h2><pre class="codeinput">datafile1 = <span class="string">'data1.csv'</span>; datafile2 = <span class="string">'data2.csv'</span>;
+flag1 = 167; flag2 = 306;
+
+BestDistancePaths1 = <span class="string">'BestDistancePaths1.csv'</span>;
+BestDistancePaths2 = <span class="string">'BestDistancePaths2.csv'</span>;
+BestDNPaths1 = <span class="string">'BestDNPaths1.csv'</span>;
+BestDNPaths2 = <span class="string">'BestDNPaths2.csv'</span>;
+BestPaths1 = <span class="string">'BestPaths1.csv'</span>;
+BestPaths2 = <span class="string">'BestPaths2.csv'</span>;
+
+d11 = plot_result(datafile1, BestDistancePaths1, flag1,<span class="string">'Answer1 for data1'</span>,1);
+d12 = plot_result(datafile2, BestDistancePaths2, flag2,<span class="string">'Answer1 for data2'</span>,2);
+
+d21 = plot_result(datafile1, BestDNPaths1, flag1,<span class="string">'Answer2 for data1'</span>,3);
+d22 = plot_result(datafile2, BestDNPaths2, flag2,<span class="string">'Answer2 for data2'</span>,4);
+
+d31 = plot_result(datafile1, BestPaths1, flag1,<span class="string">'Answer3 for data1'</span>,5);
+d32 = plot_result(datafile2, BestPaths2, flag2,<span class="string">'Answer3 for data2'</span>,6);
+</pre><h2 id="6">Functions</h2><pre class="codeinput"><span class="keyword">function</span> d = plot_result(datafile, pathfile, flag, mytitle,i)
+
+data = csvread(datafile);
+path = csvread(pathfile);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+figure;
+scatter3(A(2),A(3),A(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%A</span>
+hold <span class="string">on</span>;
+scatter3(B(2),B(3),B(4),<span class="string">'r'</span>,<span class="string">'o'</span>,<span class="string">'filled'</span>); <span class="comment">%B</span>
+hold <span class="string">on</span>;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),<span class="string">'.'</span>,<span class="string">'m'</span>);
+hold <span class="string">on</span>;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),<span class="string">'.'</span>,<span class="string">'b'</span>);
+hold <span class="string">on</span>;
+plot3([A(2),B(2)],[A(3),B(3)],[A(4),B(4)],<span class="string">'k--'</span>);
+hold <span class="string">on</span>;
+d = [];
+ <span class="keyword">for</span> i = 3: path(1,end)+1
+    hold <span class="string">on</span>;
+    <span class="comment">% calculate distance error</span>
+    d(i-2) = 0.001*sqrt( (data(path(1,i+1),2) - data(path(1,i),2))^2 <span class="keyword">...</span>
+            +(data(path(1,i+1),3) - data(path(1,i),3))^2 <span class="keyword">...</span>
+            +(data(path(1,i+1),4) - data(path(1,i),4))^2 );
+    plot3([data(path(1,i),2),data(path(1,i+1),2)],<span class="keyword">...</span>
+       [data(path(1,i),3),data(path(1,i+1),3)],<span class="keyword">...</span>
+       [data(path(1,i),4),data(path(1,i+1),4)],<span class="string">'k'</span>);
+
+ <span class="keyword">end</span>
+
+text(A(2),A(3),A(4),<span class="string">'  A'</span>, <span class="string">'fontsize'</span>, 14);
+text(B(2),B(3),B(4),<span class="string">'  B'</span>, <span class="string">'fontsize'</span>, 14);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+zlabel(<span class="string">'z'</span>);
+title(mytitle);
+
+saveas(gcf,strcat(mytitle,<span class="string">'.eps'</span>))
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
 
 nnG = graph;
 alpha = min(alpha1,alpha2);
@@ -627,8 +687,8 @@ z = Z - zt;
 
 position = [x y z];
 
-<span class="comment">% -----------????-------------</span>
-<span class="comment">%???B???</span>
+<span class="comment">% ------------------------</span>
+<span class="comment">%B</span>
 xb = x(end);
 yb = y(end);
 zb = z(end);
@@ -638,7 +698,7 @@ cosTHETA = xb/sqrt(xb^2+yb^2);
 sinTHETA = yb/sqrt(xb^2+yb^2);
 
 <span class="comment">%?z???THETA</span>
-Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] <span class="comment">%????Rz</span>
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] <span class="comment">%Rz</span>
 <span class="comment">%position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';</span>
 
 
@@ -648,11 +708,11 @@ cosPHI = a(1)/sqrt(a(1)^2+a(3)^2);
 sinPHI = a(3)/sqrt(a(1)^2+a(3)^2);
 
 <span class="comment">%?y???PHI</span>
-Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] <span class="comment">%????Ry</span>
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] <span class="comment">%Ry</span>
 <span class="comment">%position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;</span>
 
-pos = Ry*Rz*position'; <span class="comment">%??????????</span>
-pos(:,end); <span class="comment">%?????B???</span>
+pos = Ry*Rz*position'; <span class="comment">%</span>
+pos(:,end); <span class="comment">%B</span>
 
 datac = [N pos' T L];
 Ac = datac(1,:);
@@ -673,7 +733,7 @@ ylabel(<span class="string">'y'</span>);
 zlabel(<span class="string">'z'</span>);
 
 <span class="keyword">end</span>
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="main1_05.png" alt=""> <img vspace="5" hspace="5" src="main1_06.png" alt=""> <img vspace="5" hspace="5" src="main1_07.png" alt=""> <img vspace="5" hspace="5" src="main1_08.png" alt=""> <img vspace="5" hspace="5" src="main1_09.png" alt=""> <img vspace="5" hspace="5" src="main1_10.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 clear;close all;clc;
 % This project has been uploaded to github: https://github.com/veritasalice/MCM2019Fcode.git
@@ -700,7 +760,7 @@ P1 = zeros(N1); P2 = zeros(N2);% init
 % writematrix(data2, 'data2.csv');
 % writematrix(datac2, 'datac2.csv');
 
-%% Q1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%% Q1 
 a = 1; b = 1e4; c = 0;
 
 [G1,W1] = build_graph(datac1,25,15,20,25,30,0.001);
@@ -716,7 +776,7 @@ a = 1; b = 1e4; c = 0;
 % writecell(bestDistancePaths1,'BestDistancePaths1.csv');
 % writecell(bestDistancePaths2,'BestDistancePaths2.csv');
 
-%% Q2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%% Q2 
 % a = 1; b = 1e4; c = 0;
 
 [nG1, nW1] = build_strict_graph(datac1, G1, W1, N1);
@@ -732,7 +792,7 @@ a = 1; b = 1e4; c = 0;
 % writecell(bestDNPaths1,'BestDNPaths1.csv');
 % writecell(bestDNPaths2,'BestDNPaths2.csv');
 
-%% Q3 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%% Q3 
 a = 1; b = 1e4; c = 44800;
 
 P1 = build_graphProb(datac1, G1, N1, alpha11,alpha21,beta11,beta21,delta1);
@@ -748,7 +808,71 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 % writecell(bestPaths1,'BestPaths1.csv');
 % writecell(bestPaths2,'BestPaths2.csv');
 
-%% functions
+%% Plot paths
+
+datafile1 = 'data1.csv'; datafile2 = 'data2.csv';
+flag1 = 167; flag2 = 306;
+
+BestDistancePaths1 = 'BestDistancePaths1.csv';
+BestDistancePaths2 = 'BestDistancePaths2.csv';
+BestDNPaths1 = 'BestDNPaths1.csv';
+BestDNPaths2 = 'BestDNPaths2.csv';
+BestPaths1 = 'BestPaths1.csv';
+BestPaths2 = 'BestPaths2.csv';
+
+d11 = plot_result(datafile1, BestDistancePaths1, flag1,'Answer1 for data1',1);
+d12 = plot_result(datafile2, BestDistancePaths2, flag2,'Answer1 for data2',2);
+
+d21 = plot_result(datafile1, BestDNPaths1, flag1,'Answer2 for data1',3);
+d22 = plot_result(datafile2, BestDNPaths2, flag2,'Answer2 for data2',4);
+
+d31 = plot_result(datafile1, BestPaths1, flag1,'Answer3 for data1',5);
+d32 = plot_result(datafile2, BestPaths2, flag2,'Answer3 for data2',6);
+
+%% Functions
+
+function d = plot_result(datafile, pathfile, flag, mytitle,i)
+
+data = csvread(datafile); 
+path = csvread(pathfile);
+
+A = data(1,:);
+B = data(end,:);
+dataP = sortrows(data(2:end-1,:),5);
+figure;
+scatter3(A(2),A(3),A(4),'r','o','filled'); %A
+hold on;
+scatter3(B(2),B(3),B(4),'r','o','filled'); %B
+hold on;
+scatter3(dataP(1:flag,2),dataP(1:flag,3),dataP(1:flag,4),'.','m');
+hold on;
+scatter3(dataP(flag+1:end,2),dataP(flag+1:end,3),dataP(flag+1:end,4),'.','b');
+hold on;
+plot3([A(2),B(2)],[A(3),B(3)],[A(4),B(4)],'kREPLACE_WITH_DASH_DASH');
+hold on;
+d = [];
+ for i = 3: path(1,end)+1
+    hold on;
+    % calculate distance error
+    d(i-2) = 0.001*sqrt( (data(path(1,i+1),2) - data(path(1,i),2))^2 ...
+            +(data(path(1,i+1),3) - data(path(1,i),3))^2 ...
+            +(data(path(1,i+1),4) - data(path(1,i),4))^2 );
+    plot3([data(path(1,i),2),data(path(1,i+1),2)],...
+       [data(path(1,i),3),data(path(1,i+1),3)],...
+       [data(path(1,i),4),data(path(1,i+1),4)],'k'); 
+
+ end
+
+text(A(2),A(3),A(4),'  A', 'fontsize', 14);
+text(B(2),B(3),B(4),'  B', 'fontsize', 14);
+xlabel('x');
+ylabel('y');
+zlabel('z');
+title(mytitle);
+
+saveas(gcf,strcat(mytitle,'.eps'))
+end
+
 function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
 
 nnG = graph;
@@ -1208,8 +1332,8 @@ z = Z - zt;
 
 position = [x y z];
 
-% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-????REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
-%???B???
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%B
 xb = x(end);
 yb = y(end);
 zb = z(end);
@@ -1219,7 +1343,7 @@ cosTHETA = xb/sqrt(xb^2+yb^2);
 sinTHETA = yb/sqrt(xb^2+yb^2);
 
 %?z???THETA
-Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %????Rz
+Rz = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1] %Rz
 %position1 = [cosTHETA sinTHETA 0; -sinTHETA cosTHETA 0; 0 0 1]* position';
 
 
@@ -1229,11 +1353,11 @@ cosPHI = a(1)/sqrt(a(1)^2+a(3)^2);
 sinPHI = a(3)/sqrt(a(1)^2+a(3)^2);
 
 %?y???PHI
-Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %????Ry
+Ry = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] %Ry
 %position2 = [cosPHI 0 sinPHI; 0 1 0; -sinPHI 0 cosPHI] * position1;
 
-pos = Ry*Rz*position'; %??????????
-pos(:,end); %?????B???
+pos = Ry*Rz*position'; %
+pos(:,end); %B
 
 datac = [N pos' T L];
 Ac = datac(1,:);
