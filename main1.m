@@ -61,12 +61,12 @@ P2 = build_graphProb(datac2, G2, N2, alpha12,alpha22,beta12,beta22,delta2);
 [bestPaths1, totalCosts1] = get_bestPath(W1, G1, P1 ,N1, k, a, b, c);
 [bestPaths2, totalCosts2] = get_bestPath(W2, G2, P2 ,N2, k, a, b, c);
 
-% save graph
-writematrix(P1,'P1.csv');
-writematrix(P2,'P2.csv');
-% save path
-writecell(bestPaths1,'BestPaths1.csv');
-writecell(bestPaths2,'BestPaths2.csv');
+% % save graph
+% writematrix(P1,'P1.csv');
+% writematrix(P2,'P2.csv');
+% % save path
+% writecell(bestPaths1,'BestPaths1.csv');
+% writecell(bestPaths2,'BestPaths2.csv');
 
 %% functions
 function nnG = build_graphProb(datac, graph, N, alpha1,alpha2,beta1,beta2,delta)
